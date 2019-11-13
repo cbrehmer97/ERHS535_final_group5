@@ -9,4 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## LOad in Data
+
+```{r Load Data}
+library(readr)
+
+jeopardy <- read_tsv("data/master_season1-35.tsv")
+```
 
