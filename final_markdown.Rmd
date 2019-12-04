@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
 ```
 
 ## LOad in Data
@@ -62,8 +62,9 @@ labeling_positions <- clean_data %>%
 
 ## Finding the number of daily doubles by category and value
 daily_double_positions <- labeling_positions %>% 
-  mutate(daily_double = as.numeric(daily_double)) %>% 
-  group_by(category_number, value_number) %>%
+  mutate(daily_double = as.numeric(daily_double),
+         year = year(air_date)) %>% 
+  group_by(category_number, value_number, year) %>%
   summarise(number_of_doubles = sum(daily_double)) %>% 
   ungroup() %>% 
   mutate(value_number = as.numeric(value_number),
@@ -80,6 +81,19 @@ daily_double_positions %>%
 
 
 ```
+
+```{r Heat map with ggplot2 animated}
+library(purrr)
+make_plot <- function(Yr){
+  ggplot(data = daily_double_positions, aes(x = category_number, y = value_number, fill = number_of_doubles)) +
+    geom_tile(color = "white", size = 0.1)
+}
+
+seq(from = 1984, to = 2015, by = 1) %>% 
+  map_df(make_plot)
+```
+
+
 ```{r Heat Map with plotly}
 library(plotly)
 
@@ -87,11 +101,13 @@ daily_double_positions %>%
   plot_ly(
     x = ~ category_number,
     y = ~ value_number,
-    z = ~ number_of_doubles,
+    color = ~ number_of_doubles,
+    frame = ~ year,
     type = 'heatmap'
   )
 
 ```
+
 
 
 
