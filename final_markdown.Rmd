@@ -128,14 +128,15 @@ daily_double_year <- labeling_positions %>%
 
 ```{r Heat map MOLLY'S WORKING ON BY YEAR CODE}
 library(purrr)
-make_plot <- function(x, y, z){
-  ggplot(data = daily_double_year, aes(.data[[x]], .data[[y]], .data[[z]])) +
-    geom_tile(color = "white", size = 0.1)
-}
+dd_plots <- daily_double_year %>% 
+  mutate(plot = map(.x = data, 
+                     ~ ggplot(data = .x, aes(x = category_number, 
+                                             y = value_number, 
+                                             fill = number_of_doubles)) +
+                      geom_tile(color = "White", size = 0.1)))
 
-make_plot("category_number", "value_number", "number_of_doubles")
-
-
+print(dd_plots$plot)
+  
 ```
 
 ```{r Daily Double Bet Data}
