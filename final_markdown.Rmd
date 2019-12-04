@@ -143,7 +143,9 @@ make_plot("category_number", "value_number", "number_of_doubles")
 daily_double_bets <- labeling_positions %>% 
   filter(daily_double == "1") %>% 
   group_by(category_number, value_number) %>% 
-  summarise(mean = mean(value), minimum = min(value), maximum = max(value))
+  summarise(mean = mean(value), 
+            minimum = min(value), 
+            maximum = max(value))
 
 ```
 
