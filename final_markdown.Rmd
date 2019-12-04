@@ -11,7 +11,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
 ```
 
-***
 
 ## Load in Data
 
@@ -19,7 +18,6 @@ knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
 library(readr)
 
 jeopardy <- read_tsv("data/master_season1-35.tsv")
-<<<<<<< HEAD
 
 ## Filtering to ONLY look at Round 1
 clean_data <- jeopardy %>% 
@@ -61,15 +59,35 @@ labeling_positions <- clean_data %>%
                                "1" = "yes"),
          daily_double = as.character(daily_double))
 
+
+```
+
+```{r}
 ## Finding the number of daily doubles by category and value
 daily_double_positions <- labeling_positions %>% 
+  mutate(daily_double = as.numeric(daily_double),
+         year = year(air_date)) %>% 
+  group_by(category_number, value_number) %>%
+  summarise(number_of_doubles = sum(daily_double)) %>% 
+  ungroup() %>% 
+  mutate(value_number = as.numeric(value_number),
+         number_of_doubles = as.numeric(number_of_doubles))
+```
+
+```{r By Year}
+
+## grouping by year, category and value_number
+daily_double_year <- labeling_positions %>% 
   mutate(daily_double = as.numeric(daily_double),
          year = year(air_date)) %>% 
   group_by(category_number, value_number, year) %>%
   summarise(number_of_doubles = sum(daily_double)) %>% 
   ungroup() %>% 
   mutate(value_number = as.numeric(value_number),
-         number_of_doubles = as.numeric(number_of_doubles))
+         number_of_doubles = as.numeric(number_of_doubles)) %>% 
+  group_by(year) %>% 
+  nest()
+
 ```
 
 
@@ -77,23 +95,12 @@ daily_double_positions <- labeling_positions %>%
 library(ggplot2)
 
 daily_double_positions %>% 
-  ggplot(aes(x = category_number, y = value_number, fill = number_of_doubles )) +
+  ggplot(aes(x = category_number, y = value_number, 
+             fill = number_of_doubles )) +
   geom_tile(color = "White", size = 0.1)
 
 
 ```
-
-```{r Heat map with ggplot2 animated}
-library(purrr)
-make_plot <- function(Yr){
-  ggplot(data = daily_double_positions, aes(x = category_number, y = value_number, fill = number_of_doubles)) +
-    geom_tile(color = "white", size = 0.1)
-}
-
-seq(from = 1984, to = 2015, by = 1) %>% 
-  map_df(make_plot)
-```
-
 
 ```{r Heat Map with plotly}
 library(plotly)
@@ -103,18 +110,23 @@ daily_double_positions %>%
     x = ~ category_number,
     y = ~ value_number,
     color = ~ number_of_doubles,
-    frame = ~ year,
     type = 'heatmap'
   )
 
 ```
 
+```{r Heat map MOLLY'S WORKING ON BY YEAR CODE}
+library(purrr)
+make_plot <- function(x, y, z){
+  ggplot(data = daily_double_year, aes(.data[[x]], .data[[y]], .data[[z]])) +
+    geom_tile(color = "white", size = 0.1)
+}
+
+make_plot("category_number", "value_number", "number_of_doubles")
 
 
-
-
-=======
 ```
 
-***
->>>>>>> aece1129bb053f074c094d47ebe95f97bb58871a
+
+
+
