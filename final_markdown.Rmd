@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
 library(readr)
 
 jeopardy <- read_tsv("data/master_season1-35.tsv")
-<<<<<<< HEAD
+
 
 ## Filtering to ONLY look at Round 1
 clean_data <- jeopardy %>% 
@@ -109,12 +109,15 @@ daily_double_positions %>%
 
 ```
 
+```{r Daily Double Bet Data}
 
+daily_double_bets <- labeling_positions %>% 
+  filter(daily_double == "1") %>% 
+  group_by(category_number, value_number) %>% 
+  summarise(mean(value))
 
-
-
-=======
 ```
+
 
 ***
 >>>>>>> aece1129bb053f074c094d47ebe95f97bb58871a
