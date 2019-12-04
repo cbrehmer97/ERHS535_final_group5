@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
 
 
 ## Load in Data
+This section of code is looking at only 1 round of 'perfect' games (all 30 tiles played).
 
 ```{r Load Data}
 library(readr)
@@ -63,6 +64,9 @@ labeling_positions <- clean_data %>%
 
 ```
 
+## Summarizing Daily Double Counts
+
+This section of code is figuring out how many daily doubles occur in each tile. 
 ```{r Summarising number of daily doubles}
 
 ## Finding the number of daily doubles by category and value
@@ -75,6 +79,36 @@ daily_double_positions <- labeling_positions %>%
   mutate(value_number = as.numeric(value_number),
          number_of_doubles = as.numeric(number_of_doubles))
 ```
+
+## Heat Map (Version 1) with ggplot2
+
+```{r Heat Map with ggplot2}
+library(ggplot2)
+
+daily_double_positions %>% 
+  ggplot(aes(x = category_number, y = value_number, 
+             fill = number_of_doubles )) +
+  geom_tile(color = "White", size = 0.1)
+
+
+```
+
+## Plotly Heat Map
+
+```{r Heat Map with plotly}
+library(plotly)
+
+daily_double_positions %>% 
+  plot_ly(
+    x = ~ category_number,
+    y = ~ value_number,
+    color = ~ number_of_doubles,
+    type = 'heatmap'
+  )
+
+```
+
+## Heat Maps by Year
 
 ```{r Heat Map By Year}
 
@@ -92,32 +126,6 @@ daily_double_year <- labeling_positions %>%
 
 ```
 
-
-```{r Heat Map with ggplot2}
-library(ggplot2)
-
-daily_double_positions %>% 
-  ggplot(aes(x = category_number, y = value_number, 
-             fill = number_of_doubles )) +
-  geom_tile(color = "White", size = 0.1)
-
-
-```
-
-```{r Heat Map with plotly}
-library(plotly)
-
-daily_double_positions %>% 
-  plot_ly(
-    x = ~ category_number,
-    y = ~ value_number,
-    color = ~ number_of_doubles,
-    type = 'heatmap'
-  )
-
-```
-
-
 ```{r Heat map MOLLY'S WORKING ON BY YEAR CODE}
 library(purrr)
 make_plot <- function(x, y, z){
@@ -129,7 +137,6 @@ make_plot("category_number", "value_number", "number_of_doubles")
 
 
 ```
-
 
 ```{r Daily Double Bet Data}
 
