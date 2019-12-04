@@ -38,3 +38,14 @@ test <- jeopardy_clean %>%
                            x_pos == 11 | x_pos == 5 ~ 5,
                            x_pos == 12 | x_pos == 6 ~ 6))
 
+?expand
+
+test_name <- c("me", "you", "him", "her")
+
+rep(test_name, times = 4)
+
+
+
+df <- data.frame(a = c("me", "you", "him", "her")) 
+df
+df[rep(seq_len(nrow(df)), each = 2), ]
