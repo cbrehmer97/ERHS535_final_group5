@@ -18,10 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
 library(readr)
 
 jeopardy <- read_tsv("data/master_season1-35.tsv")
-<<<<<<< HEAD
-=======
 
->>>>>>> a03e1550da29dac833502566ba3d1f76c290fef6
 
 ## Filtering to ONLY look at Round 1
 clean_data <- jeopardy %>% 
@@ -119,7 +116,7 @@ daily_double_positions %>%
 
 ```
 
-<<<<<<< HEAD
+
 ```{r Heat map MOLLY'S WORKING ON BY YEAR CODE}
 library(purrr)
 make_plot <- function(x, y, z){
@@ -133,9 +130,6 @@ make_plot("category_number", "value_number", "number_of_doubles")
 ```
 
 
-
-
-=======
 ```{r Daily Double Bet Data}
 
 daily_double_bets <- labeling_positions %>% 
@@ -145,7 +139,3 @@ daily_double_bets <- labeling_positions %>%
 
 ```
 
-
-***
->>>>>>> aece1129bb053f074c094d47ebe95f97bb58871a
->>>>>>> a03e1550da29dac833502566ba3d1f76c290fef6
