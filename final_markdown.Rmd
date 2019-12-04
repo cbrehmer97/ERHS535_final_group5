@@ -63,7 +63,8 @@ labeling_positions <- clean_data %>%
 
 ```
 
-```{r}
+```{r Summarising number of daily doubles}
+
 ## Finding the number of daily doubles by category and value
 daily_double_positions <- labeling_positions %>% 
   mutate(daily_double = as.numeric(daily_double),
@@ -75,9 +76,9 @@ daily_double_positions <- labeling_positions %>%
          number_of_doubles = as.numeric(number_of_doubles))
 ```
 
-```{r By Year}
+```{r Heat Map By Year}
 
-## grouping by year, category and value_number
+## Grouping by year, category and value_number
 daily_double_year <- labeling_positions %>% 
   mutate(daily_double = as.numeric(daily_double),
          year = year(air_date)) %>% 
