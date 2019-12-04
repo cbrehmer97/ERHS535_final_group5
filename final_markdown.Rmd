@@ -114,7 +114,7 @@ daily_double_positions %>%
 daily_double_bets <- labeling_positions %>% 
   filter(daily_double == "1") %>% 
   group_by(category_number, value_number) %>% 
-  summarise(mean(value))
+  summarise(mean = mean(value), minimum = min(value), maximum = max(value))
 
 ```
 
