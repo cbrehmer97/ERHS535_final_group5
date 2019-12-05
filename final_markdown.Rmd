@@ -104,7 +104,7 @@ daily_double_positions %>%
              fill = number_of_doubles )) +
   geom_tile(color = "White", size = 0.1) +
   geom_text(aes(label = round(number_of_doubles))) +
-  scale_fill_gradient(low = "white", high = "blue")
+  scale_fill_gradient(low = "white", high = "darkblue")
 
 
 ```
