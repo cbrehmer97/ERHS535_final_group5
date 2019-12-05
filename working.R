@@ -38,6 +38,7 @@ test <- jeopardy_clean %>%
                            x_pos == 11 | x_pos == 5 ~ 5,
                            x_pos == 12 | x_pos == 6 ~ 6))
 
+
 ?expand
 
 test_name <- c("me", "you", "him", "her")
@@ -49,3 +50,48 @@ rep(test_name, times = 4)
 df <- data.frame(a = c("me", "you", "him", "her")) 
 df
 df[rep(seq_len(nrow(df)), each = 2), ]
+
+
+### Molly's added code
+library(dplyr)
+library(tidyr)  
+
+## COllin - do you think you could use this expand?
+## Using expand to create dataframe with all possible values. 
+perfect_data <- test %>% 
+  filter(daily_double == "0") %>% 
+  group_by(air_date, round) %>% 
+  expand(x_pos, value) %>% 
+  mutate(x_pos = as.numeric(x_pos),
+         y_pos = as.numeric(value),
+         value = as.numeric(value)) #%>% 
+  #group_by(round, x_pos, air_date) %>% 
+  #mutate(y_pos = c("1", "2", "3", "4", "5")) 
+
+# Filtering to include ONLY 1:5 questions asked (really want to locate DD in these)
+molly_test <- test %>% 
+  group_by(air_date, round, x_pos) %>% 
+  summarise(total = n()) %>% 
+  filter(total == "5") %>% 
+  left_join(test, by = c("round", "air_date", "x_pos")) %>% 
+  group_by(air_date, round, x_pos) %>% 
+  mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
+  select(-total) %>% 
+  ungroup()
+
+## Trying to find a way to link cateogires to perfect data set. 
+categories <- test %>% 
+  select(air_date, round, category, x_pos) %>% 
+  group_by(air_date, round, category, x_pos) %>% 
+  summarise(total = n()) %>% 
+  left_join(perfect_data, by = c("air_date", "round", "x_pos"))
+
+## Doesn't work as wanted yet.
+add_missing_values <- molly_test %>% 
+  right_join(perfect_data, by = c("air_date", "x_pos", "round", "y_pos", "value"))
+
+all <- test %>% 
+  #left_join(add_missing_values)
+  right_join(perfect_data, by = c("air_date", "x_pos", "round", "value")) %>% 
+  left_join(add_missing_values, by = c("air_date", "round", "x_pos", "value", "y_pos"))
+
