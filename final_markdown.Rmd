@@ -17,6 +17,7 @@ This section of code is looking at only 1 round of 'perfect' games (all 30 tiles
 
 ```{r Load Data}
 library(readr)
+library(dplyr)
 
 jeopardy <- read_tsv("data/master_season1-35.tsv")
 
@@ -31,6 +32,19 @@ perfect_round <- clean_data %>%
   group_by(air_date) %>% 
   summarise(total_questions_asked = n()) %>% 
   filter(total_questions_asked == "30")
+
+practice <- jeopardy %>% 
+  mutate(air_date = ymd(air_date)) %>% 
+  filter(round!= "3") %>% 
+  group_by(air_date, round, category) %>% 
+  summarise(number_categories = n()) %>% 
+  ungroup() %>% 
+  group_by(air_date, round) %>% 
+  summarise(number_categories = n()) %>% 
+  filter(number_categories == 6 )
+
+practice_2 <- jeopardy %>% 
+  right_join(practice, by = c("round", "air_date"))
 
 ## Based on the position the questions are asked in the list, creating a column 
 ## that has the category position, and the value of the question
@@ -88,7 +102,9 @@ library(ggplot2)
 daily_double_positions %>% 
   ggplot(aes(x = category_number, y = value_number, 
              fill = number_of_doubles )) +
-  geom_tile(color = "White", size = 0.1)
+  geom_tile(color = "White", size = 0.1) +
+  geom_text(aes(label = round(number_of_doubles))) +
+  scale_fill_gradient(low = "white", high = "blue")
 
 
 ```
@@ -138,6 +154,7 @@ dd_plots <- daily_double_year %>%
 print(dd_plots$plot)
   
 ```
+
 
 ```{r Daily Double Bet Data}
 
