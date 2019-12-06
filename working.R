@@ -101,4 +101,15 @@ weighted_dd <- q_asked %>%
   
   
 
+library(ggplot2)
+
+weighted_dd %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  ggplot(aes(x = x_pos, y = y_pos, 
+             fill = number_of_doubles )) +
+  geom_tile(color = "White", size = 0.1) +
+  geom_text(aes(label = round(number_of_doubles))) +
+  scale_fill_gradient(low = "white", high = "darkblue")
 
