@@ -111,7 +111,8 @@ weighted_dd <- q_asked %>%
   replace_na(list(dd_weighting = "0")) %>% ## 2
   select(-questions_asked, -notes, -na_count, -comments)
 
-weighted_dd_clean <- weighted_dd[, c(1, 2, 3, 4, 6, 5, 7, 10, 8, 9)]  
+weighted_dd_clean <- weighted_dd[, c(1, 2, 3, 4, 6, 5, 7, 10, 8, 9)] %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting))
 
 ## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
 known_dd <- test %>% 
@@ -124,6 +125,7 @@ known_dd <- test %>%
   mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
   select(-questions)
 
+sum(weighted_dd_clean$dd_weighting)
 library(ggplot2)
 weighted_dd %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
