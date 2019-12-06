@@ -97,12 +97,20 @@ weighted_dd <- q_asked %>%
   mutate(daily_double = as.numeric(daily_double),
          dd_weighting = daily_double/na_count) %>% 
   right_join(q_asked) %>% 
-  replace_na(list(dd_weighting = "0"))
-  
-  
+  replace_na(list(dd_weighting = "0")) 
+
+## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
+known_dd <- test %>% 
+  group_by(category, air_date, round) %>% 
+  summarise(questions = n()) %>% 
+  filter(questions == "5") %>% 
+  left_join(test) %>% 
+  ungroup() %>% 
+  group_by(category, air_date, round) %>% 
+  mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
+  select(-questions)
 
 library(ggplot2)
-
 weighted_dd %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(x_pos, y_pos) %>% 
@@ -111,5 +119,19 @@ weighted_dd %>%
              fill = number_of_doubles )) +
   geom_tile(color = "White", size = 0.1) +
   geom_text(aes(label = round(number_of_doubles))) +
-  scale_fill_gradient(low = "white", high = "darkblue")
+  scale_fill_gradient(high = "#132B43", 
+                      low = "#56B1F7")
 
+
+library(plotly)
+
+weighted_dd %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ number_of_doubles,
+    type = 'heatmap'
+  )
