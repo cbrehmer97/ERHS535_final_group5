@@ -69,7 +69,8 @@ perfect_data <- test %>%
 categories_expanded <- test %>% 
   group_by(air_date, round, category, x_pos) %>% 
   summarise(total = n()) %>% 
-  right_join(perfect_data, by = c("air_date", "x_pos", "round"))
+  right_join(perfect_data, by = c("air_date", "x_pos", "round")) %>% 
+  select(-total)
 
 ## Filtering out the daily doubles, and figuring out how many questions were 
 ## asked without DDs being in the mix. 
@@ -97,7 +98,10 @@ q_asked <- no_dd %>%
 weighted_dd <- q_asked %>% 
   mutate(daily_double = as.numeric(daily_double),
          dd_weighting = daily_double/na_count) %>% ## 1
-  replace_na(list(dd_weighting = "0")) ## 2
+  replace_na(list(dd_weighting = "0")) %>% ## 2
+  select(-questions_asked, -notes, -na_count, -comments)
+
+weighted_dd_clean <- weighted_dd[, c(1, 2, 3, 4, 6, 5, 7, 10, 8, 9)]  
 
 ## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
 known_dd <- test %>% 
