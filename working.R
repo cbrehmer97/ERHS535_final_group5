@@ -50,13 +50,10 @@ df
 df[rep(seq_len(nrow(df)), each = 2), ]
 
 
-### Molly's added code
+### Molly's added code (works to find the weightings)
 library(dplyr)
 library(tidyr)  
 
-## Collin - the perfect_data might be the most useful to do the weightings. 
-## Only thing I can't figure out is how to add category names to this.
-## Using expand to create dataframe with all possible values. 
 perfect_data <- test %>% 
   filter(daily_double == "0") %>% 
   group_by(air_date, round) %>% 
@@ -67,44 +64,41 @@ perfect_data <- test %>%
   group_by(round, x_pos, air_date) %>% 
   mutate(y_pos = c("1", "2", "3", "4", "5")) 
 
+## Adding the categories to the 'perfect_data' that's been expanded to include
+## all possible values
 categories_expanded <- test %>% 
-  group_by(air_date, round, category) %>% 
+  group_by(air_date, round, category, x_pos) %>% 
   summarise(total = n()) %>% 
-  right_join(perfect_data, by = c("air_date"))
+  right_join(perfect_data, by = c("air_date", "x_pos", "round"))
 
-# Filtering to include ONLY 1:5 questions asked
-molly_test <- test %>% 
-  group_by(air_date, round, x_pos) %>% 
-  summarise(total = n()) %>% 
-  filter(total == "5") %>% 
-  left_join(test, by = c("round", "air_date", "x_pos")) %>% 
-  group_by(air_date, round, x_pos) %>% 
-  mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
-  select(-total) %>% 
-  ungroup()
-
-add_missing_values <- molly_test %>% 
-  right_join(perfect_data, by = c("air_date", "x_pos", "round", "y_pos"))
-
-all <- test %>% 
-  left_join(add_missing_values)
-
-na_values <- all %>% 
-  filter(is.na(y_pos)) %>% 
-  left_join(perfect_data, by = c("air_date", "x_pos", "round", "value")) %>% 
-  select(-value.x, -y_pos.x, -value.y)
-
-dd_positions <- all %>% 
-  full_join(na_values) %>% 
-  mutate(y_pos = coalesce(y_pos, y_pos.y)) %>% 
-  select(-value.x, -value.y, -y_pos.y) #%>% 
-  #right_join(perfect_data)
-
-weighting <- dd_positions %>% 
+## Filtering out the daily doubles, and figuring out how many questions were 
+## asked without DDs being in the mix. Next, joining this with 
+## categories_expanded to get the full list of x, y positions. 
+no_dd <- test %>% 
+  filter(daily_double == "0") %>% 
   group_by(air_date, category, round) %>% 
-  summarise(total = n()) %>% 
-  left_join(dd_positions) %>% 
-  filter(!is.na(y_pos)) %>% 
-  right_join(perfect_data)
+  summarise(questions_asked = n()) %>% 
+  right_join(categories_expanded)
+
+## Joining test to no_dd for all the other information. Getting the total number
+## of NA values (i.e. questions that could either be no asked OR a DD).
+q_asked <- no_dd %>% 
+  left_join(test) %>%
+  mutate(questions_asked = as.numeric(questions_asked),
+         na_count = 5 - questions_asked) %>% 
+  replace_na(list(daily_double = "1")) %>% 
+  mutate(daily_double = as.numeric(daily_double))
+
+## Filtering by DD, and then weighting each not asked or DD question. Adding 
+## This filter back to the q_asked df to have all the possible questions. 
+## Replacing NAs with "0" so we have a full numeric column.
+weighted_dd <- q_asked %>% 
+  filter(daily_double == "1") %>% 
+  mutate(daily_double = as.numeric(daily_double),
+         dd_weighting = daily_double/na_count) %>% 
+  right_join(q_asked) %>% 
+  replace_na(list(dd_weighting = "0"))
+  
+  
 
 
