@@ -123,7 +123,8 @@ daily_double_positions %>% #use daily_double_year if you want by year
     y = ~ value_number,
     z = ~ number_of_doubles,
     #frame = ~ year,
-    type = 'heatmap'
+    type = 'heatmap', 
+    text = ~ mean
   )
 
 ```
@@ -151,7 +152,7 @@ daily_double_year <- labeling_positions %>%
 
 ```
 
-```{r Heat map MOLLY'S WORKING ON BY YEAR CODE}
+```{r Heat map by year}
 library(purrr)
 
 dd_plots <- daily_double_year %>% 
@@ -172,7 +173,7 @@ dd_plots <- daily_double_year %>%
                       scale_x_discrete(position = "top")))
 
 print(dd_plots$plot)
-  
+
 ```
 
 
@@ -183,7 +184,9 @@ daily_double_bets <- labeling_positions %>%
   group_by(category_number, value_number) %>% 
   summarise(mean = mean(value), 
             minimum = min(value), 
-            maximum = max(value))
+            maximum = max(value)) %>% 
+  mutate(value_number = as.numeric(value_number)) %>% 
+  right_join(daily_double_positions)
 
 ```
 
