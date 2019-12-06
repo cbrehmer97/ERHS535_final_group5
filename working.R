@@ -72,32 +72,32 @@ categories_expanded <- test %>%
   right_join(perfect_data, by = c("air_date", "x_pos", "round"))
 
 ## Filtering out the daily doubles, and figuring out how many questions were 
-## asked without DDs being in the mix. Next, joining this with 
-## categories_expanded to get the full list of x, y positions. 
+## asked without DDs being in the mix. 
 no_dd <- test %>% 
-  filter(daily_double == "0") %>% 
-  group_by(air_date, category, round) %>% 
-  summarise(questions_asked = n()) %>% 
-  right_join(categories_expanded)
-
-## Joining test to no_dd for all the other information. Getting the total number
-## of NA values (i.e. questions that could either be no asked OR a DD).
+  filter(daily_double == "0")
+  
+## 1 Figuring out how many questions were asked in a category.
+## 2 Joining the dataset with the ALL combinations of x & y positions
+## 3 Joining the dataset with the no_dd to gather the rest of the data
+## 4 Finding the number of NAs. NA = either the spot of a DD OR a missing value.
+## 5 Replacing all NAs in daily_double column with a '1'. 
 q_asked <- no_dd %>% 
-  left_join(test) %>%
+  group_by(air_date, category, round) %>% ## 1
+  summarise(questions_asked = n()) %>%  ## 1
+  right_join(categories_expanded) %>% ## 2
+  left_join(no_dd) %>% ## 3
   mutate(questions_asked = as.numeric(questions_asked),
-         na_count = 5 - questions_asked) %>% 
-  replace_na(list(daily_double = "1")) %>% 
-  mutate(daily_double = as.numeric(daily_double))
+         na_count = 5 - questions_asked) %>% ## 4
+  replace_na(list(daily_double = "1")) %>% ## 5
+  mutate(daily_double = as.numeric(daily_double)) 
 
-## Filtering by DD, and then weighting each not asked or DD question. Adding 
-## This filter back to the q_asked df to have all the possible questions. 
-## Replacing NAs with "0" so we have a full numeric column.
+## 1 Mutating to create a 'weighted' col. This is daily_double (either 0 or 1) 
+##   divided by the na_count (number of Nas of missing value OR DD spot)
+## 2 Changing NA values (from taking 0/na_count) to "0".
 weighted_dd <- q_asked %>% 
-  filter(daily_double == "1") %>% 
   mutate(daily_double = as.numeric(daily_double),
-         dd_weighting = daily_double/na_count) %>% 
-  right_join(q_asked) %>% 
-  replace_na(list(dd_weighting = "0")) 
+         dd_weighting = daily_double/na_count) %>% ## 1
+  replace_na(list(dd_weighting = "0")) ## 2
 
 ## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
 known_dd <- test %>% 
