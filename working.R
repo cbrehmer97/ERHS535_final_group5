@@ -124,7 +124,6 @@ weighted_dd %>%
 
 
 library(plotly)
-
 weighted_dd %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(x_pos, y_pos) %>% 
@@ -135,3 +134,5 @@ weighted_dd %>%
     z = ~ number_of_doubles,
     type = 'heatmap'
   )
+
+
