@@ -76,21 +76,31 @@ categories_expanded <- test %>%
 ## asked without DDs being in the mix. 
 no_dd <- test %>% 
   filter(daily_double == "0")
+
+category_with_dd <- test %>% 
+  filter(daily_double == "1") %>% 
+  group_by(air_date, category, round) %>% 
+  summarise(total = n()) %>% 
+  select(-total) %>% 
+  left_join(no_dd)
   
 ## 1 Figuring out how many questions were asked in a category.
 ## 2 Joining the dataset with the ALL combinations of x & y positions expanded
-## 3 Joining the dataset with the no_dd to gather the rest of the data
+## 3 Joining the dataset with category_with_dd for rest of the data.
 ## 4 Finding the number of NAs. NA = either the spot of a DD OR a missing value.
-## 5 Replacing all NAs in daily_double column with a '1'. 
-q_asked <- no_dd %>% 
+## 5 Filtering out the NAs (these are categories where there isn't a DD)
+## 6 Making all the NA spots "1" to mark category w/ DD.
+q_asked <- category_with_dd %>% 
   group_by(air_date, category, round) %>% ## 1
   summarise(questions_asked = n()) %>%  ## 1
   right_join(categories_expanded) %>% ## 2
-  left_join(no_dd) %>% ## 3
+  left_join(category_with_dd) %>% ## 3
   mutate(questions_asked = as.numeric(questions_asked),
          na_count = 5 - questions_asked) %>% ## 4
-  replace_na(list(daily_double = "1")) %>% ## 5
-  mutate(daily_double = as.numeric(daily_double)) 
+  mutate(daily_double = as.numeric(daily_double)) %>% 
+  filter(!is.na(questions_asked)) %>% ## 5
+  replace_na(list(daily_double = "1")) ##6
+
 
 ## 1 Mutating to create a 'weighted' col. This is daily_double (either 0 or 1) 
 ##   divided by the na_count (number of Nas of missing value OR DD spot)
@@ -125,7 +135,6 @@ weighted_dd %>%
   geom_text(aes(label = round(number_of_doubles))) +
   scale_fill_gradient(high = "#132B43", 
                       low = "#56B1F7")
-
 
 library(plotly)
 weighted_dd %>% 
