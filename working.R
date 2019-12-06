@@ -45,8 +45,6 @@ test_name <- c("me", "you", "him", "her")
 
 rep(test_name, times = 4)
 
-
-
 df <- data.frame(a = c("me", "you", "him", "her")) 
 df
 df[rep(seq_len(nrow(df)), each = 2), ]
