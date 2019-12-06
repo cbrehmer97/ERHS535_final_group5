@@ -116,11 +116,13 @@ daily_double_positions %>%
 ```{r Heat Map with plotly}
 library(plotly)
 
-daily_double_positions %>% 
+daily_double_positions %>% #use daily_double_year if you want by year
+  #unnest() %>% 
   plot_ly(
     x = ~ category_number,
     y = ~ value_number,
-    color = ~ number_of_doubles,
+    z = ~ number_of_doubles,
+    #frame = ~ year,
     type = 'heatmap'
   )
 
