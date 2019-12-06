@@ -108,8 +108,8 @@ q_asked <- category_with_dd %>%
 weighted_dd <- q_asked %>% 
   mutate(daily_double = as.numeric(daily_double),
          dd_weighting = daily_double/na_count) %>% ## 1
-  replace_na(list(dd_weighting = "0")) %>% ## 2
-  select(-questions_asked, -notes, -na_count, -comments)
+  replace_na(list(dd_weighting = "0")) #%>% ## 2
+  #select(-questions_asked, -notes, -na_count, -comments)
 
 weighted_dd_clean <- weighted_dd[, c(1, 2, 3, 4, 6, 5, 7, 10, 8, 9)] %>% 
   mutate(dd_weighting = as.numeric(dd_weighting))
@@ -125,7 +125,9 @@ known_dd <- test %>%
   mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
   select(-questions)
 
+sum(test$daily_double)
 sum(weighted_dd_clean$dd_weighting)
+
 library(ggplot2)
 weighted_dd %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
