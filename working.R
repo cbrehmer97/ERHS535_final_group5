@@ -78,7 +78,7 @@ no_dd <- test %>%
   filter(daily_double == "0")
   
 ## 1 Figuring out how many questions were asked in a category.
-## 2 Joining the dataset with the ALL combinations of x & y positions
+## 2 Joining the dataset with the ALL combinations of x & y positions expanded
 ## 3 Joining the dataset with the no_dd to gather the rest of the data
 ## 4 Finding the number of NAs. NA = either the spot of a DD OR a missing value.
 ## 5 Replacing all NAs in daily_double column with a '1'. 
