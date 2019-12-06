@@ -50,7 +50,8 @@ df
 df[rep(seq_len(nrow(df)), each = 2), ]
 
 
-### Molly's added code (works to find the weightings)
+### For whatever reason, when you sum up the test$daily_doubles and the weighted_dd$dd_weighting, you dont' get the same number. 
+### SO idk if we are going to be able to use this code. 
 library(dplyr)
 library(tidyr)  
 
