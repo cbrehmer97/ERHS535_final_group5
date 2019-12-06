@@ -56,6 +56,8 @@ df[rep(seq_len(nrow(df)), each = 2), ]
 library(dplyr)
 library(tidyr)  
 
+## Collin - the perfect_data might be the most useful to do the weightings. 
+## Only thing I can't figure out is how to add category names to this.
 ## Using expand to create dataframe with all possible values. 
 perfect_data <- test %>% 
   filter(daily_double == "0") %>% 
@@ -66,6 +68,11 @@ perfect_data <- test %>%
          value = as.numeric(value)) %>% 
   group_by(round, x_pos, air_date) %>% 
   mutate(y_pos = c("1", "2", "3", "4", "5")) 
+
+categories_expanded <- test %>% 
+  group_by(air_date, round, category) %>% 
+  summarise(total = n()) %>% 
+  right_join(perfect_data, by = c("air_date"))
 
 # Filtering to include ONLY 1:5 questions asked
 molly_test <- test %>% 
@@ -94,16 +101,12 @@ dd_positions <- all %>%
   mutate(y_pos = coalesce(y_pos, y_pos.y)) %>% 
   select(-value.x, -value.y, -y_pos.y) #%>% 
   #right_join(perfect_data)
-  
+
 weighting <- dd_positions %>% 
   group_by(air_date, category, round) %>% 
   summarise(total = n()) %>% 
-  left_join(dd_positions) #%>% 
-  #filter(is.na(y_pos))
+  left_join(dd_positions) %>% 
+  filter(!is.na(y_pos)) %>% 
+  right_join(perfect_data)
 
 
-daily_double_positions <- dd_positions %>% 
-  group_by(x_pos, y_pos) %>%
-  summarise(number_of_doubles = sum(daily_double))
-  #mutate(value_number = as.numeric(value_number),
-         #number_of_doubles = as.numeric(number_of_doubles))
