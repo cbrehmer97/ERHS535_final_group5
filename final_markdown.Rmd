@@ -138,7 +138,7 @@ daily_double_year <- labeling_positions %>%
   mutate(value_number = as.numeric(value_number),
          number_of_doubles = as.numeric(number_of_doubles)) %>% 
   mutate(value_number = factor(value_number), 
-                    value_number = factor(value_number, levels = rev(levels(value_number)))) %>% 
+                        value_number = factor(value_number, levels = rev(levels(value_number)))) %>% 
   group_by(year) %>% 
   nest()
 
