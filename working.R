@@ -56,7 +56,6 @@ df[rep(seq_len(nrow(df)), each = 2), ]
 library(dplyr)
 library(tidyr)  
 
-## COllin - do you think you could use this expand?
 ## Using expand to create dataframe with all possible values. 
 perfect_data <- test %>% 
   filter(daily_double == "0") %>% 
@@ -64,9 +63,9 @@ perfect_data <- test %>%
   expand(x_pos, value) %>% 
   mutate(x_pos = as.numeric(x_pos),
          y_pos = as.numeric(value),
-         value = as.numeric(value)) #%>% 
-  #group_by(round, x_pos, air_date) %>% 
-  #mutate(y_pos = c("1", "2", "3", "4", "5")) 
+         value = as.numeric(value)) %>% 
+  group_by(round, x_pos, air_date) %>% 
+  mutate(y_pos = c("1", "2", "3", "4", "5")) 
 
 # Filtering to include ONLY 1:5 questions asked (really want to locate DD in these)
 molly_test <- test %>% 
@@ -79,19 +78,32 @@ molly_test <- test %>%
   select(-total) %>% 
   ungroup()
 
-## Trying to find a way to link cateogires to perfect data set. 
-categories <- test %>% 
-  select(air_date, round, category, x_pos) %>% 
-  group_by(air_date, round, category, x_pos) %>% 
-  summarise(total = n()) %>% 
-  left_join(perfect_data, by = c("air_date", "round", "x_pos"))
-
-## Doesn't work as wanted yet.
 add_missing_values <- molly_test %>% 
-  right_join(perfect_data, by = c("air_date", "x_pos", "round", "y_pos", "value"))
+  right_join(perfect_data, by = c("air_date", "x_pos", "round", "y_pos"))
 
 all <- test %>% 
-  #left_join(add_missing_values)
-  right_join(perfect_data, by = c("air_date", "x_pos", "round", "value")) %>% 
-  left_join(add_missing_values, by = c("air_date", "round", "x_pos", "value", "y_pos"))
+  left_join(add_missing_values)
 
+na_values <- all %>% 
+  filter(is.na(y_pos)) %>% 
+  left_join(perfect_data, by = c("air_date", "x_pos", "round", "value")) %>% 
+  select(-value.x, -y_pos.x, -value.y)
+
+dd_positions <- all %>% 
+  full_join(na_values) %>% 
+  mutate(y_pos = coalesce(y_pos, y_pos.y)) %>% 
+  select(-value.x, -value.y, -y_pos.y) #%>% 
+  #right_join(perfect_data)
+  
+weighting <- dd_positions %>% 
+  group_by(air_date, category, round) %>% 
+  summarise(total = n()) %>% 
+  left_join(dd_positions) #%>% 
+  #filter(is.na(y_pos))
+
+
+daily_double_positions <- dd_positions %>% 
+  group_by(x_pos, y_pos) %>%
+  summarise(number_of_doubles = sum(daily_double))
+  #mutate(value_number = as.numeric(value_number),
+         #number_of_doubles = as.numeric(number_of_doubles))
