@@ -67,7 +67,7 @@ perfect_data <- test %>%
   group_by(round, x_pos, air_date) %>% 
   mutate(y_pos = c("1", "2", "3", "4", "5")) 
 
-# Filtering to include ONLY 1:5 questions asked (really want to locate DD in these)
+# Filtering to include ONLY 1:5 questions asked
 molly_test <- test %>% 
   group_by(air_date, round, x_pos) %>% 
   summarise(total = n()) %>% 
