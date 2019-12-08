@@ -50,8 +50,6 @@ df
 df[rep(seq_len(nrow(df)), each = 2), ]
 
 
-### For whatever reason, when you sum up the test$daily_doubles and the weighted_dd$dd_weighting, you dont' get the same number. 
-### SO idk if we are going to be able to use this code. 
 library(dplyr)
 library(tidyr)  
 
@@ -84,7 +82,23 @@ category_with_dd <- test %>%
   summarise(total = n()) %>% 
   select(-total) %>% 
   left_join(no_dd)
-  
+
+only_dd_in_cat <- test %>% 
+  group_by(air_date, category, round) %>% 
+  summarise(total = n()) %>% 
+  filter(total == "1") %>% 
+  left_join(test) %>% 
+  filter(daily_double == "1") %>% 
+  slice(rep(1:n(), each = 5)) %>% 
+  group_by(air_date, category) %>% 
+  mutate(value = ifelse(round == "1", c("200", "400", "600", "800", "1000"),
+                                       c("400", "800", "1200", "1600", "2000")),
+         value = as.numeric(value)) %>% 
+  group_by(air_date, category, round) %>% 
+  mutate(y_pos = c("1", "2", "3", "4", "5"),
+         dd_weighting = 1/5) %>% 
+  select(-total)
+ 
 ## 1 Figuring out how many questions were asked in a category.
 ## 2 Joining the dataset with the ALL combinations of x & y positions expanded
 ## 3 Joining the dataset with category_with_dd for rest of the data.
@@ -109,8 +123,9 @@ q_asked <- category_with_dd %>%
 weighted_dd <- q_asked %>% 
   mutate(daily_double = as.numeric(daily_double),
          dd_weighting = daily_double/na_count) %>% ## 1
-  replace_na(list(dd_weighting = "0")) #%>% ## 2
-  #select(-questions_asked, -notes, -na_count, -comments)
+  replace_na(list(dd_weighting = 0)) %>% ## 2
+  full_join(only_dd_in_cat) %>% 
+  select(-questions_asked, -notes, -na_count, -comments) 
 
 weighted_dd_clean <- weighted_dd[, c(1, 2, 3, 4, 6, 5, 7, 10, 8, 9)] %>% 
   mutate(dd_weighting = as.numeric(dd_weighting))
@@ -127,7 +142,7 @@ known_dd <- test %>%
   select(-questions)
 
 sum(test$daily_double)
-sum(weighted_dd_clean$dd_weighting)
+sum(weighted_dd$dd_weighting)
 
 library(ggplot2)
 weighted_dd %>% 
