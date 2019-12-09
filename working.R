@@ -61,7 +61,7 @@ perfect_data <- test %>%
          y_pos = as.numeric(value),
          value = as.numeric(value)) %>% 
   group_by(round, x_pos, air_date) %>% 
-  mutate(y_pos = c("1", "2", "3", "4", "5")) 
+  mutate(y_pos = c("1", "2", "3", "4", "5"))
 
 ## Adding the categories to the 'perfect_data' that's been expanded to include
 ## all possible values
@@ -92,7 +92,7 @@ only_dd_in_cat <- test %>%
   slice(rep(1:n(), each = 5)) %>% 
   group_by(air_date, category) %>% 
   mutate(value = ifelse(round == "1", c("200", "400", "600", "800", "1000"),
-                                       c("400", "800", "1200", "1600", "2000")),
+                                      c("400", "800", "1200", "1600", "2000")),
          value = as.numeric(value)) %>% 
   group_by(air_date, category, round) %>% 
   mutate(y_pos = c("1", "2", "3", "4", "5"),
@@ -105,7 +105,11 @@ only_dd_in_cat <- test %>%
 ## 4 Finding the number of NAs. NA = either the spot of a DD OR a missing value.
 ## 5 Filtering out the NAs (these are categories where there isn't a DD)
 ## 6 Making all the NA spots "1" to mark category w/ DD.
-q_asked <- category_with_dd %>% 
+
+## 1 Mutating to create a 'weighted' col. This is daily_double (either 0 or 1) 
+##   divided by the na_count (number of Nas of missing value OR DD spot)
+## 2 Changing NA values (from taking 0/na_count) to "0".
+weighted_dd <- category_with_dd %>% 
   group_by(air_date, category, round) %>% ## 1
   summarise(questions_asked = n()) %>%  ## 1
   right_join(categories_expanded) %>% ## 2
@@ -114,21 +118,12 @@ q_asked <- category_with_dd %>%
          na_count = 5 - questions_asked) %>% ## 4
   mutate(daily_double = as.numeric(daily_double)) %>% 
   filter(!is.na(questions_asked)) %>% ## 5
-  replace_na(list(daily_double = "1")) ##6
-
-
-## 1 Mutating to create a 'weighted' col. This is daily_double (either 0 or 1) 
-##   divided by the na_count (number of Nas of missing value OR DD spot)
-## 2 Changing NA values (from taking 0/na_count) to "0".
-weighted_dd <- q_asked %>% 
-  mutate(daily_double = as.numeric(daily_double),
-         dd_weighting = daily_double/na_count) %>% ## 1
+  replace_na(list(daily_double = 1)) %>%  ##6
+  mutate(dd_weighting = daily_double/na_count) %>% ## 1
   replace_na(list(dd_weighting = 0)) %>% ## 2
   full_join(only_dd_in_cat) %>% 
-  select(-questions_asked, -notes, -na_count, -comments) 
+  select(-questions_asked, -na_count) 
 
-weighted_dd_clean <- weighted_dd[, c(1, 2, 3, 4, 6, 5, 7, 10, 8, 9)] %>% 
-  mutate(dd_weighting = as.numeric(dd_weighting))
 
 ## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
 known_dd <- test %>% 
@@ -141,11 +136,34 @@ known_dd <- test %>%
   mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
   select(-questions)
 
+dd <- test %>% 
+  filter(daily_double == "1") %>% 
+  right_join(weighted_dd, by = c("air_date", "category", "daily_double", 
+                                 "round", "x_pos")) %>% 
+  replace_na(list(comments.x = 0)) %>% 
+  replace_na(list(answer.x = 0)) %>% 
+  replace_na(list(question.x = 0)) %>% 
+  replace_na(list(notes.x = 0)) %>% 
+  mutate(comments.x = ifelse(comments.x == 0, comments.y, comments.x),
+         answer.x = ifelse(answer.x == 0, answer.y, answer.x),
+         question.x = ifelse(question.x == 0, question.y, question.x),
+         notes.x = ifelse(notes.x == 0, notes.y, notes.x)) %>% 
+  rename("comments" = "comments.x",
+         "answer" = "answer.x",
+         "question" = "question.x",
+         "notes" = "notes.x",
+         "dd_value" = "value.x",
+         "value" = "value.y") %>% 
+  select(-comments.y, -answer.y, -question.y, -notes.y)
+  
+dd <- dd[, c(1, 2, 12, 11, 5, 6, 13, 3, 4, 7, 8, 9, 10)]
+
+
 sum(test$daily_double)
 sum(weighted_dd$dd_weighting)
 
 library(ggplot2)
-weighted_dd %>% 
+dd %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
@@ -157,7 +175,7 @@ weighted_dd %>%
                       low = "#56B1F7")
 
 library(plotly)
-weighted_dd %>% 
+dd %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
