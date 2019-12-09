@@ -193,7 +193,8 @@ dd_1 %>%
     x = ~ x_pos,
     y = ~ y_pos,
     z = ~ number_of_doubles,
-    type = 'heatmap'
+    type = 'heatmap',
+    reversescale = TRUE
   )
 
 #Round 2
@@ -212,5 +213,6 @@ dd %>%
     x = ~ x_pos,
     y = ~ y_pos,
     z = ~ number_of_doubles,
-    type = 'heatmap'
+    type = 'heatmap',
+    reversescale = TRUE
   )
