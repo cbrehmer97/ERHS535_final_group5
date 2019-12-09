@@ -15,22 +15,53 @@ dd_episodes <- jeopardy_clean %>%
   group_by(air_date) %>% 
   summarise(dd_count = sum(daily_double))
 
-#Assign position
-#Seperate by round
-#assign y position based on value
-#x position will be harder
-
-test <- jeopardy_clean %>% 
+#Function w mapping
+test1 <- jeopardy_clean %>% 
+  mutate(dd_bet = case_when(daily_double == 1 ~ value,
+                            daily_double == 0 ~ 0),
+         value = case_when(daily_double == 1 ~ 5,
+                           daily_double == 0 ~ value)) %>% 
   group_by(air_date) %>% 
   nest() %>% 
-  mutate(categories = map(data, ~ unique(select(., category))),
-         num_categories = map(categories, ~ nrow(.))) %>% 
+  mutate(categories_unique = map(data, ~ unique(select(., category))),
+         categories_asked = map(data, ~ select(., round, category, value, dd_bet, daily_double)),
+         num_categories = map(categories_unique, ~ nrow(.))) %>% 
   unnest(num_categories) %>% 
   filter(num_categories == 12) %>% 
-  mutate(categories = map(categories, ~ rownames_to_column(., var = "x_pos")),
-         data_keep = map2(categories, data, ~full_join(.x, .y, by = "category"))) %>% 
+  mutate(categories_unique = map(categories_unique, ~ rownames_to_column(., var = "x_pos")),
+         categories_pos = map2(categories_unique, categories_asked, ~full_join(.x, .y)),
+         categories_pos = map(categories_pos, ~ group_by(., round)),
+         categories_pos = map(categories_pos, ~ expand(., x_pos, value)))
+
+
+test2 <- test1 %>% 
+  mutate(cat_dd = map(categories_asked, ~ filter(., daily_double == 1)),
+         cat_dd = map(cat_dd, ~ select(., category)),
+         categories_test = map2(categories_asked, cat_dd, ~ right_join(.x, .y, by = "category")),
+         categories_test = map(categories_test, ~ group_by(., category)),
+         categories_test = map(categories_test, ~ mutate(., count = n(),
+                                                           weight = if_else(count == 5, 1, 1/(6-count)))),
+         test_join = map2(categories_unique, categories_pos, ~ full_join(.x, .y, by = c("x_pos"))),
+         categories_expanded = map2(test_join, categories_asked, ~ full_join(.x, .y, by = c("round", "category", "value"))),
+         categories_expanded = map2(categories_expanded, cat_dd, ~ right_join(.x, .y, by = "category")),
+         categories_test = map(categories_test, ~ select(., category, weight)),
+         categories_test = map(categories_test, ~ distinct(.)),
+         categories_expanded = map2(categories_expanded, categories_test,
+                                    ~ full_join(.x, .y, by = "category")),
+         categories_expanded = map(categories_expanded, ~ mutate(., daily_double = case_when(is.na(daily_double) == TRUE ~ weight,
+                                                                              is.na(daily_double) == FALSE ~ daily_double))),
+         categories_expanded = map(categories_expanded, ~ filter(., value != 5)),
+         test_join = map(test_join, ~ filter(., value != 5)),
+         test_join = map(test_join, ~ group_by(., category)),
+         test_join = map(test_join, ~ mutate(., y_pos = c("1", "2", "3", "4", "5"))),
+         data_keep = map2(test_join, categories_expanded, ~ full_join(.x, .y, by = c("x_pos", "category", "round", "value"))))
+
+#Contains final information needed
+test_final <- test2 %>% 
   select(air_date, data_keep) %>% 
   unnest(cols = data_keep) %>% 
+  filter(daily_double != 0) %>% 
+  select(air_date, category, round, x_pos, y_pos, value, weight) %>% 
   mutate(x_pos = case_when(x_pos == 7 | x_pos == 1 ~ 1,
                            x_pos == 8 | x_pos == 2 ~ 2,
                            x_pos == 9 | x_pos == 3 ~ 3,
@@ -38,18 +69,7 @@ test <- jeopardy_clean %>%
                            x_pos == 11 | x_pos == 5 ~ 5,
                            x_pos == 12 | x_pos == 6 ~ 6))
 
-
-?expand
-
-test_name <- c("me", "you", "him", "her")
-
-rep(test_name, times = 4)
-
-df <- data.frame(a = c("me", "you", "him", "her")) 
-df
-df[rep(seq_len(nrow(df)), each = 2), ]
-
-
+### Begining of Molly's code
 library(dplyr)
 library(tidyr)  
 
