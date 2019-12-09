@@ -40,7 +40,7 @@ test2 <- test1 %>%
          categories_test = map2(categories_asked, cat_dd, ~ right_join(.x, .y, by = "category")),
          categories_test = map(categories_test, ~ group_by(., category)),
          categories_test = map(categories_test, ~ mutate(., count = n(),
-                                                           weight = if_else(count == 5, 1, 1/(6-count)))),
+                                                         weight = if_else(count == 5, 1, 1/(6-count)))),
          test_join = map2(categories_unique, categories_pos, ~ full_join(.x, .y, by = c("x_pos"))),
          categories_expanded = map2(test_join, categories_asked, ~ full_join(.x, .y, by = c("round", "category", "value"))),
          categories_expanded = map2(categories_expanded, cat_dd, ~ right_join(.x, .y, by = "category")),
@@ -49,7 +49,7 @@ test2 <- test1 %>%
          categories_expanded = map2(categories_expanded, categories_test,
                                     ~ full_join(.x, .y, by = "category")),
          categories_expanded = map(categories_expanded, ~ mutate(., daily_double = case_when(is.na(daily_double) == TRUE ~ weight,
-                                                                              is.na(daily_double) == FALSE ~ daily_double))),
+                                                                                             is.na(daily_double) == FALSE ~ daily_double))),
          categories_expanded = map(categories_expanded, ~ filter(., value != 5)),
          test_join = map(test_join, ~ filter(., value != 5)),
          test_join = map(test_join, ~ group_by(., category)),
@@ -112,13 +112,13 @@ only_dd_in_cat <- test %>%
   slice(rep(1:n(), each = 5)) %>% 
   group_by(air_date, category) %>% 
   mutate(value = ifelse(round == "1", c("200", "400", "600", "800", "1000"),
-                                      c("400", "800", "1200", "1600", "2000")),
+                        c("400", "800", "1200", "1600", "2000")),
          value = as.numeric(value)) %>% 
   group_by(air_date, category, round) %>% 
   mutate(y_pos = c("1", "2", "3", "4", "5"),
          dd_weighting = 1/5) %>% 
   select(-total)
- 
+
 ## 1 Figuring out how many questions were asked in a category.
 ## 2 Joining the dataset with the ALL combinations of x & y positions expanded
 ## 3 Joining the dataset with category_with_dd for rest of the data.
@@ -147,14 +147,14 @@ weighted_dd <- category_with_dd %>%
 
 ## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
 #known_dd <- test %>% 
-  #group_by(category, air_date, round) %>% 
-  #summarise(questions = n()) %>% 
-  #filter(questions == "5") %>% 
-  #left_join(test) %>% 
-  #ungroup() %>% 
-  #group_by(category, air_date, round) %>% 
-  #mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
-  #select(-questions)
+#group_by(category, air_date, round) %>% 
+#summarise(questions = n()) %>% 
+#filter(questions == "5") %>% 
+#left_join(test) %>% 
+#ungroup() %>% 
+#group_by(category, air_date, round) %>% 
+#mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
+#select(-questions)
 
 dd <- test %>% 
   filter(daily_double == "1") %>% 
@@ -175,7 +175,7 @@ dd <- test %>%
          "dd_value" = "value.x",
          "value" = "value.y") %>% 
   select(-comments.y, -answer.y, -question.y, -notes.y)
-  
+
 dd <- dd[, c(1, 2, 12, 11, 5, 6, 13, 3, 4, 7, 8, 9, 10)]
 
 
@@ -205,7 +205,7 @@ dd %>%
     y = ~ y_pos,
     z = ~ number_of_doubles,
     type = 'heatmap'
-)
+  )
 
 year_plot <- dd %>% 
   mutate(daily_double = as.numeric(daily_double),
@@ -232,4 +232,4 @@ year_plot %>%
     text = ~ number_of_doubles,
     type = 'heatmap',
     reversescale = TRUE
-) 
+  ) 
