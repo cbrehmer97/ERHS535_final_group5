@@ -174,8 +174,14 @@ dd %>%
   scale_fill_gradient(high = "#132B43", 
                       low = "#56B1F7")
 
+#Create heat maps
 library(plotly)
-dd %>% 
+
+#Round 1
+dd_1 <- dd %>%
+  filter(round == "1")
+
+dd_1 %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
@@ -186,4 +192,17 @@ dd %>%
     type = 'heatmap'
   )
 
+#Round 2
+dd_2 <- dd %>%
+  filter(round == "2")
 
+dd %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ number_of_doubles,
+    type = 'heatmap'
+  )
