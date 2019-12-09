@@ -183,6 +183,10 @@ dd_1 <- dd %>%
 
 dd_1 %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  mutate(y_pos = factor(y_pos), 
+         y_pos = 
+           factor(y_pos, 
+                  levels = rev(levels(y_pos)))) %>%
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   plot_ly(
@@ -198,6 +202,10 @@ dd_2 <- dd %>%
 
 dd %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  mutate(y_pos = factor(y_pos), 
+         y_pos = 
+           factor(y_pos, 
+                  levels = rev(levels(y_pos)))) %>%
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   plot_ly(
