@@ -184,9 +184,8 @@ dd %>%
     x = ~ x_pos,
     y = ~ y_pos,
     z = ~ number_of_doubles,
-    type = 'heatmap',
-    reversescale = TRUE
-    )
+    type = 'heatmap'
+)
 
 year_plot <- dd %>% 
   mutate(daily_double = as.numeric(daily_double),
