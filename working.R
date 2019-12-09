@@ -201,6 +201,7 @@ year_plot <- dd %>%
                   levels = rev(levels(y_pos)))) %>% 
   group_by(year) %>% 
   nest()
+
 year_plot %>% 
   unnest() %>% 
   plot_ly(
