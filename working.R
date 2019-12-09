@@ -195,13 +195,16 @@ dd_1 %>%
     z = ~ number_of_doubles,
     type = 'heatmap',
     reversescale = TRUE
-  )
+    ) %>%
+  layout(title = "Number of Daily Doubles, Round 1", 
+         xaxis = list(title = ""), 
+         yaxis = list(title = ""))
 
 #Round 2
 dd_2 <- dd %>%
   filter(round == "2")
 
-dd %>% 
+dd_2 %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   mutate(y_pos = factor(y_pos), 
          y_pos = 
@@ -215,4 +218,7 @@ dd %>%
     z = ~ number_of_doubles,
     type = 'heatmap',
     reversescale = TRUE
-  )
+  ) %>%
+  layout(title = "Number of Daily Doubles, Round 2", 
+         xaxis = list(title = ""), 
+         yaxis = list(title = ""))
