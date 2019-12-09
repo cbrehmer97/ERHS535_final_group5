@@ -126,15 +126,15 @@ weighted_dd <- category_with_dd %>%
 
 
 ## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
-known_dd <- test %>% 
-  group_by(category, air_date, round) %>% 
-  summarise(questions = n()) %>% 
-  filter(questions == "5") %>% 
-  left_join(test) %>% 
-  ungroup() %>% 
-  group_by(category, air_date, round) %>% 
-  mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
-  select(-questions)
+#known_dd <- test %>% 
+  #group_by(category, air_date, round) %>% 
+  #summarise(questions = n()) %>% 
+  #filter(questions == "5") %>% 
+  #left_join(test) %>% 
+  #ungroup() %>% 
+  #group_by(category, air_date, round) %>% 
+  #mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
+  #select(-questions)
 
 dd <- test %>% 
   filter(daily_double == "1") %>% 
@@ -164,6 +164,7 @@ sum(weighted_dd$dd_weighting)
 
 library(ggplot2)
 dd %>% 
+  #filter(round == "2") %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
@@ -183,7 +184,32 @@ dd %>%
     x = ~ x_pos,
     y = ~ y_pos,
     z = ~ number_of_doubles,
-    type = 'heatmap'
-  )
+    type = 'heatmap',
+    reversescale = TRUE
+    )
 
-
+year_plot <- dd %>% 
+  mutate(daily_double = as.numeric(daily_double),
+         year = year(air_date)) %>% 
+  group_by(x_pos, y_pos, year) %>%
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  ungroup() %>% 
+  mutate(y_pos = as.numeric(y_pos),
+         number_of_doubles = as.numeric(number_of_doubles)) %>% 
+  mutate(y_pos = factor(y_pos), 
+         y_pos = 
+           factor(y_pos, 
+                  levels = rev(levels(y_pos)))) %>% 
+  group_by(year) %>% 
+  nest()
+year_plot %>% 
+  unnest() %>% 
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ number_of_doubles,
+    frame = ~ year, 
+    text = ~ number_of_doubles,
+    type = 'heatmap',
+    reversescale = TRUE
+) 
