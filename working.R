@@ -85,7 +85,12 @@ test_final <- test2 %>%
                            x_pos == 9 | x_pos == 3 ~ 3,
                            x_pos == 10 | x_pos == 4 ~ 4,
                            x_pos == 11 | x_pos == 5 ~ 5,
-                           x_pos == 12 | x_pos == 6 ~ 6))
+                           x_pos == 12 | x_pos == 6 ~ 6)) %>% 
+  mutate(daily_double = 1) %>% ## Added for actual values - MH
+  left_join(jeopardy_clean, by = c("air_date", "category", "daily_double", 
+                                    "round")) %>% 
+  rename("dd_value" = "value.y",
+         "value" = "value.x") 
 
 ### Begining of Molly's code
 library(dplyr)
