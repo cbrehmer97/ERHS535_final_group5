@@ -121,11 +121,11 @@ category_with_dd <- test %>%
   select(-total) %>% 
   left_join(no_dd)
 
-only_dd_in_cat <- test1 %>% 
+only_dd_in_cat <- test %>% 
   group_by(air_date, category, round) %>% 
   summarise(total = n()) %>% 
   filter(total == "1") %>% 
-  left_join(test1) %>% 
+  left_join(test) %>% 
   filter(daily_double == "1") %>% 
   slice(rep(1:n(), each = 5)) %>% 
   group_by(air_date, category) %>% 
@@ -161,18 +161,6 @@ weighted_dd <- category_with_dd %>%
   replace_na(list(dd_weighting = 0)) %>% ## 2
   full_join(only_dd_in_cat) %>% 
   select(-questions_asked, -na_count) 
-
-
-## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
-#known_dd <- test %>% 
-#group_by(category, air_date, round) %>% 
-#summarise(questions = n()) %>% 
-#filter(questions == "5") %>% 
-#left_join(test) %>% 
-#ungroup() %>% 
-#group_by(category, air_date, round) %>% 
-#mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
-#select(-questions)
 
 dd <- test %>% 
   filter(daily_double == "1") %>% 
