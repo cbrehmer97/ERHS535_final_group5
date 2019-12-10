@@ -215,6 +215,8 @@ dd_1 %>%
     x = ~ x_pos,
     y = ~ y_pos,
     z = ~ number_of_doubles,
+    text = ~paste(x_pos, y_pos, number_of_doubles),
+    hoverinfo = "text",
     colors = "Blues",
     type = 'heatmap',
     reversescale = FALSE
