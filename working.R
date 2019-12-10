@@ -14,7 +14,25 @@ jeopardy_clean <- jeopardy_raw %>%
 dd_episodes <- jeopardy_clean %>% 
   group_by(air_date) %>% 
   summarise(dd_count = sum(daily_double))
-
+########################################################
+test <- jeopardy_clean %>% 
+  group_by(air_date) %>% 
+  nest() %>% 
+  mutate(categories = map(data, ~ unique(select(., category))),
+         num_categories = map(categories, ~ nrow(.))) %>% 
+  unnest(num_categories) %>% 
+  filter(num_categories == 12) %>% 
+  mutate(categories = map(categories, ~ rownames_to_column(., var = "x_pos")),
+         data_keep = map2(categories, data, ~full_join(.x, .y, by = "category"))) %>% 
+  select(air_date, data_keep) %>% 
+  unnest(cols = data_keep) %>% 
+  mutate(x_pos = case_when(x_pos == 7 | x_pos == 1 ~ 1,
+                           x_pos == 8 | x_pos == 2 ~ 2,
+                           x_pos == 9 | x_pos == 3 ~ 3,
+                           x_pos == 10 | x_pos == 4 ~ 4,
+                           x_pos == 11 | x_pos == 5 ~ 5,
+                           x_pos == 12 | x_pos == 6 ~ 6))
+#################################################################
 #Function w mapping
 test1 <- jeopardy_clean %>% 
   mutate(dd_bet = case_when(daily_double == 1 ~ value,
@@ -144,18 +162,6 @@ weighted_dd <- category_with_dd %>%
   full_join(only_dd_in_cat) %>% 
   select(-questions_asked, -na_count) 
 
-
-## ONLY KNOWN daily double positions USE THIS FOR AVERAGE PT VALUE DD. 
-#known_dd <- test %>% 
-#group_by(category, air_date, round) %>% 
-#summarise(questions = n()) %>% 
-#filter(questions == "5") %>% 
-#left_join(test) %>% 
-#ungroup() %>% 
-#group_by(category, air_date, round) %>% 
-#mutate(y_pos = c("1", "2", "3", "4", "5")) %>% 
-#select(-questions)
-
 dd <- test %>% 
   filter(daily_double == "1") %>% 
   right_join(weighted_dd, by = c("air_date", "category", "daily_double", 
@@ -174,7 +180,8 @@ dd <- test %>%
          "notes" = "notes.x",
          "dd_value" = "value.x",
          "value" = "value.y") %>% 
-  select(-comments.y, -answer.y, -question.y, -notes.y)
+  select(-comments.y, -answer.y, -question.y, -notes.y) %>% 
+  filter(daily_double == "1")
 
 dd <- dd[, c(1, 2, 12, 11, 5, 6, 13, 3, 4, 7, 8, 9, 10)]
 
@@ -195,7 +202,7 @@ dd %>%
   scale_fill_gradient(high = "#132B43", 
                       low = "#56B1F7")
 
-#Begining of Nikki's code
+###Start of Nikki's code
 library(plotly)
 
 #Create heat maps by round
@@ -248,10 +255,9 @@ dd_2 %>%
          xaxis = list(title = ""), 
          yaxis = list(title = ""))
 
-RColorBrewer::brewer.pal.info
+###End Nikki's code
 
-#End Nikki's code
-
+###Begining of Molly's code
 year_plot <- dd %>% 
   mutate(daily_double = as.numeric(daily_double),
          year = year(air_date)) %>% 
@@ -278,4 +284,3 @@ year_plot %>%
     type = 'heatmap',
     reversescale = TRUE
   ) 
-
