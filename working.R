@@ -215,8 +215,9 @@ dd_1 %>%
     x = ~ x_pos,
     y = ~ y_pos,
     z = ~ number_of_doubles,
+    colors = "Blues",
     type = 'heatmap',
-    reversescale = TRUE
+    reversescale = FALSE
     ) %>%
   layout(title = "Number of Daily Doubles, Round 1", 
          xaxis = list(title = ""), 
@@ -244,6 +245,8 @@ dd_2 %>%
   layout(title = "Number of Daily Doubles, Round 2", 
          xaxis = list(title = ""), 
          yaxis = list(title = ""))
+
+RColorBrewer::brewer.pal.info
 
 #End Nikki's code
 
