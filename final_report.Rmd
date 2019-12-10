@@ -1,6 +1,6 @@
 ---
 title: "Final Report"
-author: "Molly Hischke"
+author: "Nikki Johnson, Molly Hischke, Collin Brehmer, and Kyle Hancock"
 date: "12/9/2019"
 output:
   word_document: default
@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = FALSE, message = FALSE)
 ```
 
 # Introduction: Research question, and Why did you decide to ask this question?
@@ -69,8 +69,9 @@ There were two main challenges in finding the positions of the daily double ques
 
 Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by location per episode (i.e. Category 1, Category 2, etc.). 
 
-In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a cateogyr, the daily double could be at any one of those locations (Figure 1).       
-```{r}
+In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any one of those locations (Figure 1). To solve the issue, the daily double was  looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' locations (Figure 2). 
+      
+```{r, echo = FALSE, fig.height= 4, fig.width = 7}
 jeopardy_board %>% 
    mutate(y_pos = factor(y_pos), 
                         y_pos = factor(y_pos, levels = rev(levels(y_pos)))) %>% 
@@ -84,13 +85,12 @@ jeopardy_board %>%
   geom_text(aes(label = text), color = "gray") +
   scale_x_discrete(position = "top") +
   labs(caption = paste0("Figure 1. In Category 1, the 400, 600 and 800 values",
-  " were missing, and \na daily double question was asked. But it's unknown if ",
-  "the daily double was \nat the 400, 600 or 800 value position.")) +
+  " were missing, and \na daily double question was asked. But it's unknown ",
+  "if the daily double was \nat the 400, 600 or 800 value position.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
-To solve the issue, the daily double was  looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' locations (Figure 2). 
-```{r}
+```{r, echo = FALSE, fig.height= 4, fig.width = 7}
 weighted_jeopardy_board %>% 
    mutate(y_pos = factor(y_pos), 
                         y_pos = factor(y_pos, levels = rev(levels(y_pos)))) %>% 
