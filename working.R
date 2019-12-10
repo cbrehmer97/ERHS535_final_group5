@@ -14,7 +14,25 @@ jeopardy_clean <- jeopardy_raw %>%
 dd_episodes <- jeopardy_clean %>% 
   group_by(air_date) %>% 
   summarise(dd_count = sum(daily_double))
-
+########################################################
+test <- jeopardy_clean %>% 
+  group_by(air_date) %>% 
+  nest() %>% 
+  mutate(categories = map(data, ~ unique(select(., category))),
+         num_categories = map(categories, ~ nrow(.))) %>% 
+  unnest(num_categories) %>% 
+  filter(num_categories == 12) %>% 
+  mutate(categories = map(categories, ~ rownames_to_column(., var = "x_pos")),
+         data_keep = map2(categories, data, ~full_join(.x, .y, by = "category"))) %>% 
+  select(air_date, data_keep) %>% 
+  unnest(cols = data_keep) %>% 
+  mutate(x_pos = case_when(x_pos == 7 | x_pos == 1 ~ 1,
+                           x_pos == 8 | x_pos == 2 ~ 2,
+                           x_pos == 9 | x_pos == 3 ~ 3,
+                           x_pos == 10 | x_pos == 4 ~ 4,
+                           x_pos == 11 | x_pos == 5 ~ 5,
+                           x_pos == 12 | x_pos == 6 ~ 6))
+#################################################################
 #Function w mapping
 test1 <- jeopardy_clean %>% 
   mutate(dd_bet = case_when(daily_double == 1 ~ value,
@@ -103,11 +121,11 @@ category_with_dd <- test %>%
   select(-total) %>% 
   left_join(no_dd)
 
-only_dd_in_cat <- test %>% 
+only_dd_in_cat <- test1 %>% 
   group_by(air_date, category, round) %>% 
   summarise(total = n()) %>% 
   filter(total == "1") %>% 
-  left_join(test) %>% 
+  left_join(test1) %>% 
   filter(daily_double == "1") %>% 
   slice(rep(1:n(), each = 5)) %>% 
   group_by(air_date, category) %>% 
@@ -174,7 +192,8 @@ dd <- test %>%
          "notes" = "notes.x",
          "dd_value" = "value.x",
          "value" = "value.y") %>% 
-  select(-comments.y, -answer.y, -question.y, -notes.y)
+  select(-comments.y, -answer.y, -question.y, -notes.y) %>% 
+  filter(daily_double == "1")
 
 dd <- dd[, c(1, 2, 12, 11, 5, 6, 13, 3, 4, 7, 8, 9, 10)]
 
@@ -195,57 +214,17 @@ dd %>%
   scale_fill_gradient(high = "#132B43", 
                       low = "#56B1F7")
 
-#Begining of Nikki's code
 library(plotly)
-
-#Create heat maps by round
-#Round 1
-dd_1 <- dd %>%
-  filter(round == "1")
-
-dd_1 %>% 
+dd %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
-  mutate(y_pos = factor(y_pos), 
-         y_pos = 
-           factor(y_pos, 
-                  levels = rev(levels(y_pos)))) %>%
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   plot_ly(
     x = ~ x_pos,
     y = ~ y_pos,
     z = ~ number_of_doubles,
-    type = 'heatmap',
-    reversescale = TRUE
-    ) %>%
-  layout(title = "Number of Daily Doubles, Round 1", 
-         xaxis = list(title = ""), 
-         yaxis = list(title = ""))
-
-#Round 2
-dd_2 <- dd %>%
-  filter(round == "2")
-
-dd_2 %>% 
-  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
-  mutate(y_pos = factor(y_pos), 
-         y_pos = 
-           factor(y_pos, 
-                  levels = rev(levels(y_pos)))) %>%
-  group_by(x_pos, y_pos) %>% 
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
-  plot_ly(
-    x = ~ x_pos,
-    y = ~ y_pos,
-    z = ~ number_of_doubles,
-    type = 'heatmap',
-    reversescale = TRUE
-    ) %>%
-  layout(title = "Number of Daily Doubles, Round 2", 
-         xaxis = list(title = ""), 
-         yaxis = list(title = ""))
-
-#End Nikki's code
+    type = 'heatmap'
+  )
 
 year_plot <- dd %>% 
   mutate(daily_double = as.numeric(daily_double),
@@ -273,4 +252,3 @@ year_plot %>%
     type = 'heatmap',
     reversescale = TRUE
   ) 
-
