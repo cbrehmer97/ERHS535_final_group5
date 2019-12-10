@@ -14,25 +14,7 @@ jeopardy_clean <- jeopardy_raw %>%
 dd_episodes <- jeopardy_clean %>% 
   group_by(air_date) %>% 
   summarise(dd_count = sum(daily_double))
-########################################################
-test <- jeopardy_clean %>% 
-  group_by(air_date) %>% 
-  nest() %>% 
-  mutate(categories = map(data, ~ unique(select(., category))),
-         num_categories = map(categories, ~ nrow(.))) %>% 
-  unnest(num_categories) %>% 
-  filter(num_categories == 12) %>% 
-  mutate(categories = map(categories, ~ rownames_to_column(., var = "x_pos")),
-         data_keep = map2(categories, data, ~full_join(.x, .y, by = "category"))) %>% 
-  select(air_date, data_keep) %>% 
-  unnest(cols = data_keep) %>% 
-  mutate(x_pos = case_when(x_pos == 7 | x_pos == 1 ~ 1,
-                           x_pos == 8 | x_pos == 2 ~ 2,
-                           x_pos == 9 | x_pos == 3 ~ 3,
-                           x_pos == 10 | x_pos == 4 ~ 4,
-                           x_pos == 11 | x_pos == 5 ~ 5,
-                           x_pos == 12 | x_pos == 6 ~ 6))
-#################################################################
+
 #Function w mapping
 test1 <- jeopardy_clean %>% 
   mutate(dd_bet = case_when(daily_double == 1 ~ value,
@@ -96,6 +78,25 @@ test_final <- test2 %>%
 library(dplyr)
 library(tidyr)  
 
+########################################################
+test <- jeopardy_clean %>% 
+  group_by(air_date) %>% 
+  nest() %>% 
+  mutate(categories = map(data, ~ unique(select(., category))),
+         num_categories = map(categories, ~ nrow(.))) %>% 
+  unnest(num_categories) %>% 
+  filter(num_categories == 12) %>% 
+  mutate(categories = map(categories, ~ rownames_to_column(., var = "x_pos")),
+         data_keep = map2(categories, data, ~full_join(.x, .y, by = "category"))) %>% 
+  select(air_date, data_keep) %>% 
+  unnest(cols = data_keep) %>% 
+  mutate(x_pos = case_when(x_pos == 7 | x_pos == 1 ~ 1,
+                           x_pos == 8 | x_pos == 2 ~ 2,
+                           x_pos == 9 | x_pos == 3 ~ 3,
+                           x_pos == 10 | x_pos == 4 ~ 4,
+                           x_pos == 11 | x_pos == 5 ~ 5,
+                           x_pos == 12 | x_pos == 6 ~ 6))
+#################################################################
 perfect_data <- test %>% 
   filter(daily_double == "0") %>% 
   group_by(air_date, round) %>% 
