@@ -208,18 +208,62 @@ dd %>%
   scale_fill_gradient(high = "#132B43", 
                       low = "#56B1F7")
 
+###Start of Nikki's code
 library(plotly)
-dd %>% 
+
+#Create heat maps by round
+#Round 1
+dd_1 <- dd %>%
+  filter(round == "1")
+
+dd_1 %>% 
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  mutate(y_pos = factor(y_pos), 
+         y_pos = 
+           factor(y_pos, 
+                  levels = rev(levels(y_pos)))) %>%
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   plot_ly(
     x = ~ x_pos,
     y = ~ y_pos,
     z = ~ number_of_doubles,
-    type = 'heatmap'
-  )
+    text = ~paste(x_pos, y_pos, number_of_doubles),
+    hoverinfo = "text",
+    colors = "Blues",
+    type = 'heatmap',
+    reversescale = FALSE
+    ) %>%
+  layout(title = "Number of Daily Doubles, Round 1", 
+         xaxis = list(title = ""), 
+         yaxis = list(title = ""))
 
+#Round 2
+dd_2 <- dd %>%
+  filter(round == "2")
+
+dd_2 %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  mutate(y_pos = factor(y_pos), 
+         y_pos = 
+           factor(y_pos, 
+                  levels = rev(levels(y_pos)))) %>%
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ number_of_doubles,
+    type = 'heatmap',
+    reversescale = TRUE
+    ) %>%
+  layout(title = "Number of Daily Doubles, Round 2", 
+         xaxis = list(title = ""), 
+         yaxis = list(title = ""))
+
+###End Nikki's code
+
+###Begining of Molly's code
 year_plot <- dd %>% 
   mutate(daily_double = as.numeric(daily_double),
          year = year(air_date)) %>% 
