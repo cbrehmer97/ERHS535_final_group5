@@ -1,35 +1,110 @@
 ---
 title: "Final Presentation"
-author: "Collin Brehmer"
-date: "12/2/2019"
+author: "Collin Brehmer, Molly Hischke, Kyle Hancock, Nikki Johnson"
+date: "12/13/2019"
 output: ioslides_presentation
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+## Research Question
+
+What tiles on the Jeopardy board are most likely to be a Daily Double?
+
+## Introduction
+
+## Methods
+
+Finding the position of the Daily Double:
+
+- x position (location of the categories)
+- y position (location of the values)
+
+```{r, echo = FALSE, message = FALSE, include = FALSE}
+library(tidyverse)
+library(ggplot2)
+jeopardy_board <- tibble(
+  x_pos = c("Category 1", "Category 1", "Category 1", 
+            "Category 1", "Category 1", 
+            "Category 2", "Category 2", "Category 2", 
+            "Category 2", "Category 2",
+            "Category 3", "Category 3", "Category 3", 
+            "Category 3", "Category 3", 
+            "Category 4", "Category 4", "Category 4", 
+            "Category 4", "Category 4", 
+            "Category 5", "Category 5", "Category 5", 
+            "Category 5", "Category 5",
+            "Category 6", "Category 6", "Category 6", 
+            "Category 6", "Category 6"),
+  y_pos = c(200, 400, 600, 800, 1000, 
+            200, 400, 600, 800, 1000,
+            200, 400, 600, 800, 1000,
+            200, 400, 600, 800, 1000,
+            200, 400, 600, 800, 1000, 
+            200, 400, 600, 800, 1000))
+
+jeopardy_board <- jeopardy_board %>% 
+  mutate(number_of_dd = c(1, 0, 0, 2, 1,
+                          1, 0, 1, 1, 1,
+                          1, 1, 1, 1, 1,
+                          1, 1, 1, 0, 1,
+                          1, 0, 0, 1, 1,
+                          1, 1, 1, 0, 1),
+          text = c(NA, "MISSING", "MISSING", "Daily Double", NA,
+                          NA, "MISSING", NA, NA, NA,
+                          NA, NA, NA, NA, NA,
+                          NA, NA, NA, "MISSING", NA,
+                          NA, "MISSING", "MISSING", NA, NA,
+                          NA, NA, NA, "MISSING", NA)) 
+weighted_jeopardy_board <- jeopardy_board %>% 
+  mutate(number_of_dd = c(NA, 0.33, 0.33, 0.33, NA,
+                          NA, NA, NA, NA, NA,
+                          NA, NA, NA, NA, NA,
+                          NA, NA, NA, NA, NA,
+                          NA, NA, NA, NA, NA,
+                          NA, NA, NA, NA, NA)) 
+
 ```
 
-## R Markdown
-
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
-
-## Slide with Bullets
-
-- Bullet 1
-- Bullet 2
-- Bullet 3
-
-## Slide with R Output
-
-```{r cars, echo = TRUE}
-summary(cars)
+## Methods
+      
+```{r, echo = FALSE, fig.height= 4, fig.width = 7, warning = FALSE}
+jeopardy_board %>% 
+   mutate(y_pos = factor(y_pos), 
+                        y_pos = factor(y_pos, levels = rev(levels(y_pos)))) %>% 
+  ggplot(aes(x = x_pos, y = y_pos, fill = number_of_dd)) +
+  geom_tile(color = "White", size = 0.1) +
+  scale_fill_continuous(high = "#132B43", low = "white") + 
+  labs(x = NULL, 
+       y = NULL, 
+       fill = NULL) +
+  theme(legend.position = "none") + 
+  geom_text(aes(label = text), color = "gray") +
+  scale_x_discrete(position = "top") +
+  labs(caption = paste0("Figure 1. In Category 1, the 400, 600 and 800 values",
+  " were missing, and \na daily double question was asked. But it's unknown ",
+  "if the daily double was \nat the 400, 600 or 800 value position.")) +
+  theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
-## Slide with Plot
+## Methods
 
-```{r pressure}
-plot(pressure)
+```{r, echo = FALSE, fig.height= 4, fig.width = 7, warning = FALSE}
+weighted_jeopardy_board %>% 
+   mutate(y_pos = factor(y_pos), 
+                        y_pos = factor(y_pos, levels = rev(levels(y_pos)))) %>% 
+  ggplot(aes(x = x_pos, y = y_pos, fill = number_of_dd)) +
+  geom_tile(color = "White", size = 0.1) +
+  scale_fill_continuous(high = "#132B43", low = "white") + 
+  labs(x = NULL, 
+       y = NULL, 
+       fill = NULL) +
+  theme(legend.position = "none") + 
+  geom_text(aes(label = number_of_dd)) +
+  scale_x_discrete(position = "top") +
+  labs(caption = paste0("Figure 2. The daily double within a category was ",
+                        "weighted acrossed all \nmissing values.")) +
+  theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
+## Results
+
+## Conclusions
