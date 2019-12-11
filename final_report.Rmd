@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = FALSE, message = FAL
 
 # Introduction: Research question, and Why did you decide to ask this question?
 
-The Daily Double is an important part of the game of Jeopardy. If a player can effectively predict where the Daily Doubles will be on the board they have a clear advantage to win the game. Recent Jeopardy contestant, James Holzhauer, became known for his strategy of hopping around the board to find the Daily Doubles and then betting larger than normal quantities. In just 32 games, his total winnings reached almost $2.5 million which is an average of over $75,000 per game.
+The Daily Double is an important part of the game of Jeopardy. If a player can effectively predict where the Daily Doubles will be on the board they have a clear advantage to win the game. Recent Jeopardy contestant, James Holzhauer, became known for his strategy of hopping around the board to find the Daily Doubles and then betting larger than normal quantities. In just 32 games, his total winnings reached almost $2.5 million (an average of over $75,000 per game).
 
 What positions on the Jeopardy board are most likely to be a Daily Double? Several people have attempted to answer this question recently and their results can be found in a variety of different sources. Finding the answer to this question is not as simple as it seems at first. The common datasets for Jeopardy questions do not contain the questions that were not asked. This can make finding the exact x and y positions difficult. Multiple approaches can be taken to deal with this issue. The approach taken to develop the figures in this report are described in the methods section. The answer to this question can be effectively presented visually through a heatmap that shows each position on the Jeopardy board. This important question presents a challenge in data cleaning, but when done correctly can result in interesting figures that has drawn the attention of many Jeopardy fans and data enthusiasts.
 
@@ -66,14 +66,16 @@ weighted_jeopardy_board <- jeopardy_board %>%
 
 ```
 
+The Jeopardy dataset utilized was found on GitHub which included the air date, round, daily double information, category, value, question, answer, comments, and notes. The dataset was filtered to only include dates beyond November 26, 2001. On that date, there was a change in the point values within the rounds (for example, round one went from values of 100, 200, 300, 400, and 500 to 200, 400, 600, 800 and 1000). During the point value update, there could have been other changes made to Jeopardy impacting the daily double locations; therefore, we have excluded dates prior to the change. 
+
 There were two main challenges in finding the positions of the daily double questions:
 
 1. Finding the x position (the location of the categoires).
 2. Finding the y position (the location of the values). 
 
-Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by location per episode (i.e. Category 1, Category 2, etc.). 
+Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by x location per episode (i.e. Category 1, Category 2, etc.). 
 
-In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any one of those locations (Figure 1). To solve the issue, the daily double was  looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' locations (Figure 2). 
+In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any of the missing value locations (Figure 1). To solve the issue, the daily double was looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' value locations (Figure 2). 
       
 ```{r, echo = FALSE, fig.height= 4, fig.width = 7}
 jeopardy_board %>% 
