@@ -225,11 +225,12 @@ dd_1 <- dd %>%
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(categories_heatmap, value) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  mutate(Percent = round(number_of_doubles/2476*100, digits = 2)) %>%
   plot_ly(
     x = ~ categories_heatmap,
     y = ~ value,
-    z = ~ number_of_doubles,
-    hovertemplate = paste("Daily Double Count: %{z:,}<br>",
+    z = ~ Percent,
+    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
                           "<extra></extra>"),
     colors = "Blues",
     type = 'heatmap'
@@ -255,11 +256,12 @@ dd_2 <- dd %>%
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(categories_heatmap, value) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  mutate(Percent = round(number_of_doubles/4887*100, digits = 2)) %>%
   plot_ly(
     x = ~ categories_heatmap,
     y = ~ value,
-    z = ~ number_of_doubles,
-    hovertemplate = paste("Daily Double Count: %{z:,}<br>",
+    z = ~ Percent,
+    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
                           "<extra></extra>"),
     colors = "Blues",
     type = 'heatmap'
@@ -273,6 +275,7 @@ dd_2 <- dd %>%
                       range = c(2000, 1600, 1200, 800, 400), 
                       dtick = 400, tick0 = 2000))
 dd_2
+
 ###End Nikki's code
 
 ###Begining of Molly's code
