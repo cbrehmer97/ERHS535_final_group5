@@ -223,13 +223,13 @@ dd_1 <- dd %>%
                                         x_pos == "5" ~ "Category 5",
                                         x_pos == "6" ~ "Category 6")) %>%
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
-  group_by(categories_heatmap, y_pos) %>% 
+  group_by(categories_heatmap, value) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   plot_ly(
     x = ~ categories_heatmap,
-    y = ~ y_pos,
+    y = ~ value,
     z = ~ number_of_doubles,
-    text = ~paste(categories_heatmap, y_pos, number_of_doubles),
+    text = ~paste(categories_heatmap, value, number_of_doubles),
     hoverinfo = "text",
     colors = "Blues",
     type = 'heatmap',
@@ -250,11 +250,11 @@ dd_2 <- dd %>%
                                         x_pos == "5" ~ "Category 5",
                                         x_pos == "6" ~ "Category 6")) %>%
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
-  group_by(categories_heatmap, y_pos) %>% 
+  group_by(categories_heatmap, value) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   plot_ly(
     x = ~ categories_heatmap,
-    y = ~ y_pos,
+    y = ~ value,
     z = ~ number_of_doubles,
     type = 'heatmap',
     reversescale = TRUE
