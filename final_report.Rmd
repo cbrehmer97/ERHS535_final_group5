@@ -71,9 +71,9 @@ There were two main challenges in finding the positions of the daily double ques
 1. Finding the x position (the location of the categoires).
 2. Finding the y position (the location of the values). 
 
-Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by location per episode (i.e. Category 1, Category 2, etc.). 
+Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by location per episode (i.e. the first category listed in the data set would be the leftmost category on the game board for each episode). 
 
-In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any one of those locations (Figure 1). To solve the issue, the daily double was  looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' locations (Figure 2). 
+In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any one of those locations (Figure 1). To rectify this issue, the chance that the daily double appeared at a given y position was weighted equally across all missing questions in the category (Figure 2). 
       
 ```{r, echo = FALSE, fig.height= 4, fig.width = 7}
 jeopardy_board %>% 
