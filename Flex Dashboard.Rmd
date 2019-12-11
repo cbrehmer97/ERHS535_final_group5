@@ -4,16 +4,14 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-    theme: sandstone
+    theme: cerulean
 ---
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
 ```
 
-Monthly deaths from bronchitis, emphysema and asthma in the
-UK, 1974–1979 (Source: P. J. Diggle, 1990, Time Series: A
-Biostatistical Introduction. Oxford, table A.3)
+The following are Jeopardy's Daily Double Heatmaps by year and round (aggregating data from all years). 
 
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 library(readr)
@@ -80,7 +78,7 @@ daily_double_year %>%
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-### Daily Doubles Round 1
+### Daily Doubles in Round 1
 
 ```{r}
 # Create heat maps by round
