@@ -3,19 +3,20 @@ title: "Final Presentation"
 author: "Collin Brehmer, Molly Hischke, Kyle Hancock, Nikki Johnson"
 date: "12/13/2019"
 output:
-  beamer_presentation: default
   ioslides_presentation: default
+  beamer_presentation: default
 ---
 
 ## Research Question
 
-What tiles on the Jeopardy board are most likely to be a Daily Double?
+What positions on the Jeopardy board are most likely to be a Daily Double?
 
 ## Introduction
 
-Why did we ask this question?
-
-
+- Importance to the game (James Holzhauer)
+- Other research
+- Challenge of finding position
+- Visual representation
 
 ## Methods
 
@@ -120,6 +121,8 @@ Flex Dashboard:
 - Daily Double Location by year
 
 ## Conclusions
+
+
 
 ## Overview of Approach
 
