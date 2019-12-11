@@ -1,5 +1,5 @@
 ---
-title: "Jeopardy Daily Double Locations"
+title: "Jeopardy Daily Double Heatmaps"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
