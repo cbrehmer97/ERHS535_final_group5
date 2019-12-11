@@ -11,9 +11,10 @@ output:
 library(flexdashboard)
 ```
 
-```{r}
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+library(readr)
 
-
+dd <- read.csv("final_data.csv")
 ```
 
 
@@ -41,12 +42,71 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
+library(plotly)
+library(forcats)
+
+#Create heat maps by round
+#Round 1
+dd_1 <- dd %>%
+  filter(round == "1") %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  mutate(y_pos = factor(y_pos, levels = c(1, 2, 3, 4, 5)),
+         y_pos = factor(y_pos, levels = rev(levels(y_pos))),
+
+         x_pos = factor(x_pos, levels = c(1, 2, 3, 4, 5, 6)),
+         x_pos = fct_recode(x_pos, 
+                            "Category 1" = "1",
+                            "Category 2" = "2",
+                            "Category 3" = "3",
+                            "Category 4" = "4",
+                            "Category 5" = "5",
+                            "Category 6" = "6")) %>%
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  mutate(percent = round( number_of_doubles/2476*100, digits = 2))
+sum(dd_1$number_of_doubles)
+dd_1 %>% 
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ number_of_doubles,
+    colors = "Blues",
+    type = 'heatmap',
+    hovertemplate = paste("Daily Double Count: %{z:,}<br>",
+                          "<extra></extra>"),
+    reversescale = FALSE
+    ) %>%
+  layout(xaxis = list(title = "", side = "top"), 
+         yaxis = list(title = ""),
+         legend = list(title = "Daily Double Count")) 
+
 
 ```
 
 ### Chart C
 
 ```{r}
+#Round 2
+dd_2 <- dd %>%
+  filter(round == "2")
 
+dd_2 %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  mutate(y_pos = factor(y_pos), 
+         y_pos = 
+           factor(y_pos, 
+                  levels = rev(levels(y_pos)))) %>%
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ number_of_doubles,
+    type = 'heatmap',
+    reversescale = TRUE
+    ) %>%
+  layout(title = "Number of Daily Doubles, Round 2", 
+         xaxis = list(title = ""), 
+         yaxis = list(title = ""))
 ```
 
