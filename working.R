@@ -72,6 +72,9 @@ jeopardy_final <- jeopardy_clean %>%
                            x_pos == 11 | x_pos == 5 ~ 5,
                            x_pos == 12 | x_pos == 6 ~ 6))
 
+
+write_csv(jeopardy_final, "data/data_final.csv")
+
 ###Start of Nikki's code
 library(plotly)
 
