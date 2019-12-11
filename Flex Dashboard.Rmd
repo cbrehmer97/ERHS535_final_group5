@@ -11,10 +11,14 @@ output:
 library(flexdashboard)
 ```
 
+Monthly deaths from bronchitis, emphysema and asthma in the
+UK, 1974–1979 (Source: P. J. Diggle, 1990, Time Series: A
+Biostatistical Introduction. Oxford, table A.3)
+
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 library(readr)
 
-dd <- read.csv("final_data.csv")
+dd <- read_csv("data/data_final.csv")
 ```
 
 
@@ -64,7 +68,7 @@ dd_1 <- dd %>%
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   mutate(percent = round( number_of_doubles/2476*100, digits = 2))
-sum(dd_1$number_of_doubles)
+
 dd_1 %>% 
   plot_ly(
     x = ~ x_pos,
