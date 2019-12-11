@@ -229,8 +229,8 @@ dd_1 <- dd %>%
     x = ~ categories_heatmap,
     y = ~ value,
     z = ~ number_of_doubles,
-    text = ~paste(categories_heatmap, value, number_of_doubles),
-    hoverinfo = "text",
+    hovertemplate = paste("Daily Double Count: %{z:,}<br>",
+                          "<extra></extra>"),
     colors = "Blues",
     type = 'heatmap'
     ) %>%
@@ -259,6 +259,8 @@ dd_2 <- dd %>%
     x = ~ categories_heatmap,
     y = ~ value,
     z = ~ number_of_doubles,
+    hovertemplate = paste("Daily Double Count: %{z:,}<br>",
+                          "<extra></extra>"),
     colors = "Blues",
     type = 'heatmap'
     ) %>%
