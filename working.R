@@ -232,8 +232,7 @@ dd_1 <- dd %>%
     text = ~paste(categories_heatmap, value, number_of_doubles),
     hoverinfo = "text",
     colors = "Blues",
-    type = 'heatmap',
-    reversescale = FALSE
+    type = 'heatmap'
     ) %>%
   layout(title = list(text = "Number of Daily Doubles, Round 1", 
                       y = 0.02), 
@@ -260,8 +259,8 @@ dd_2 <- dd %>%
     x = ~ categories_heatmap,
     y = ~ value,
     z = ~ number_of_doubles,
-    type = 'heatmap',
-    reversescale = TRUE
+    colors = "Blues",
+    type = 'heatmap'
     ) %>%
   layout(title = list(text = "Number of Daily Doubles, Round 2",
                       y = 0.02), 
