@@ -20,10 +20,9 @@ What positions on the Jeopardy board are most likely to be a Daily Double?
 
 ## Methods
 
-Finding the position of the Daily Double:
-
-- x position (location of the categories)
-- y position (location of the values)
+- Only included episodes from dates beyond November 26, 2001 
+- Finding x position of daily double (filtered to episodes with 12 categories)
+- Finding y position of daily double (Weighted across missing values)
 
 ```{r, echo = FALSE, message = FALSE, include = FALSE}
 library(tidyverse)
@@ -86,9 +85,6 @@ jeopardy_board %>%
   theme(legend.position = "none") + 
   geom_text(aes(label = text), color = "gray") +
   scale_x_discrete(position = "top") +
-  labs(caption = paste0("Figure 1. In Category 1, the 400, 600 and 800 values",
-  " were missing, and \na daily double question was asked. But it's unknown ",
-  "if the daily double was \nat the 400, 600 or 800 value position.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
@@ -107,8 +103,6 @@ weighted_jeopardy_board %>%
   theme(legend.position = "none") + 
   geom_text(aes(label = number_of_dd)) +
   scale_x_discrete(position = "top") +
-  labs(caption = paste0("Figure 2. The daily double within a category was ",
-                        "weighted acrossed all \nmissing values.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
@@ -120,12 +114,18 @@ Flex Dashboard:
 - Daily Double Round 2 since 2001
 - Daily Double Location by year
 
+- Daily Doubles are not evenly distributed across the board
+- No differences in daily double location between Round 1 and Round 2
+- 15 out of 19 years had daily doubles within the 800/1600 row
+- 
+
 ## Conclusions
-
-
 
 ## Overview of Approach
 
 ## Interesting Packages or Techniques
+
+- `map()`, `mutate()`, and `join`
+- `plot_ly()` 
 
 ## Lessons Learned
