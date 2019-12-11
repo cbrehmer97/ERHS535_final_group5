@@ -76,6 +76,7 @@ There were two main challenges in finding the positions of the daily double ques
 Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by x location per episode (i.e. Category 1, Category 2, etc.). 
 
 In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any of the missing value locations (Figure 1). To solve the issue, the daily double was looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' value locations (Figure 2). 
+
       
 ```{r, echo = FALSE, fig.height= 4, fig.width = 7}
 jeopardy_board %>% 
