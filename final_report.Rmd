@@ -13,6 +13,10 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = FALSE, message = FAL
 
 # Introduction: Research question, and Why did you decide to ask this question?
 
+The Daily Double is an important part of the game of Jeopardy. If a player can effectively predict where the Daily Doubles will be on the board they have a clear advantage to win the game. Recent Jeopardy contestant, James Holzhauer, became known for his strategy of hopping around the board to find the Daily Doubles and then betting larger than normal quantities. In just 32 games, his total winnings reached almost $2.5 million which is an average of over $75,000 per game.
+
+What positions on the Jeopardy board are most likely to be a Daily Double? Several people have attempted to answer this question recently and their results can be found in a variety of different sources. Finding the answer to this question is not as simple as it seems at first. The common datasets for Jeopardy questions do not contain the questions that were not asked. This can make finding the exact x and y positions difficult. Multiple approaches can be taken to deal with this issue. The approach taken to develop the figures in this report are described in the methods section. The answer to this question can be effectively presented visually through a heatmap that shows each position on the Jeopardy board. This important question presents a challenge in data cleaning, but when done correctly can result in interesting figures that has drawn the attention of many Jeopardy fans and data enthusiasts.
+
 # Methods: 
 
 How did you investigate the data to try to answer your question? This should not include R code (save that for the tutorial part), but rather should use language like “To determine if … was associated with …, we measured the correlation …”. It’s fine for this project if the Methods are fairly simple (“We investigated the distribution of … using boxplots …”, “We took the mean and interquartile range of …”, “We mapped state-level averages of …”, etc.). Why do you choose to use the Methods you used? Why do you think they’re appropriate and useful for your project?
