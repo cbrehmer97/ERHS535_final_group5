@@ -99,8 +99,7 @@ dd_1 <- dd %>%
     colors = "Blues",
     type = 'heatmap'
     ) %>%
-  layout(title = list(text = "Number of Daily Doubles, Round 1", 
-                      y = 0.02), 
+  layout(title = list(text = ""), 
          xaxis = list(title = "", 
                       side = 'top',
                       tickangle = -45), 
@@ -130,8 +129,7 @@ dd_2 <- dd %>%
     colors = "Blues",
     type = 'heatmap'
     ) %>%
-  layout(title = list(text = "Number of Daily Doubles, Round 2",
-                      y = 0.02), 
+  layout(title = list(text = ""), 
          xaxis = list(title = "", 
                       side = 'top',
                       tickangle = -45), 
