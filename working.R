@@ -235,9 +235,13 @@ dd_1 <- dd %>%
     type = 'heatmap',
     reversescale = FALSE
     ) %>%
-  layout(title = list(text = "Number of Daily Doubles, Round 1"), 
-         xaxis = list(title = ""), 
-         yaxis = list(title = "", range = c(1000, 800, 600, 400, 200)))
+  layout(title = list(text = "Number of Daily Doubles, Round 1", 
+                      y = 0.02), 
+         xaxis = list(title = "", 
+                      side = 'top',
+                      tickangle = -45), 
+         yaxis = list(title = "", 
+                      range = c(1000, 800, 600, 400, 200)))
 dd_1
 
 #Round 2
@@ -259,8 +263,11 @@ dd_2 <- dd %>%
     type = 'heatmap',
     reversescale = TRUE
     ) %>%
-  layout(title = "Number of Daily Doubles, Round 2", 
-         xaxis = list(title = ""), 
+  layout(title = list(text = "Number of Daily Doubles, Round 2",
+                      y = 0.02), 
+         xaxis = list(title = "", 
+                      side = 'top',
+                      tickangle = -45), 
          yaxis = list(title = "", 
                       range = c(2000, 1600, 1200, 800, 400), 
                       dtick = 400, tick0 = 2000))
