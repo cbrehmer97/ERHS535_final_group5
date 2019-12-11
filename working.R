@@ -81,7 +81,6 @@ library(plotly)
 
 #Create heat maps by round
 #Round 1
-
 dd_1 <- dd %>% 
   filter(round == "1") %>%
   mutate(categories_heatmap = case_when(x_pos == "1" ~ "Category 1",
@@ -143,31 +142,3 @@ dd_2 <- dd %>%
 dd_2
 
 ###End Nikki's code
-
-###Begining of Molly's code
-year_plot <- dd %>% 
-  mutate(daily_double = as.numeric(daily_double),
-         year = year(air_date)) %>% 
-  group_by(x_pos, y_pos, year) %>%
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
-  ungroup() %>% 
-  mutate(y_pos = as.numeric(y_pos),
-         number_of_doubles = as.numeric(number_of_doubles)) %>% 
-  mutate(y_pos = factor(y_pos), 
-         y_pos = 
-           factor(y_pos, 
-                  levels = rev(levels(y_pos)))) %>% 
-  group_by(year) %>% 
-  nest()
-
-year_plot %>% 
-  unnest() %>% 
-  plot_ly(
-    x = ~ x_pos,
-    y = ~ y_pos,
-    z = ~ number_of_doubles,
-    frame = ~ year, 
-    text = ~ number_of_doubles,
-    type = 'heatmap',
-    reversescale = TRUE
-  ) 
