@@ -1,5 +1,5 @@
 ---
-title: "Flex Dashboard"
+title: "Daily Double Locations"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -32,7 +32,6 @@ Column {.tabset .tabset-fade}
 ### Chart AA
 
 ```{r}
-library(ggplot2)
 
 ```
 
