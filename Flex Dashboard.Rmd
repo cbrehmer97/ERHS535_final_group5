@@ -1,5 +1,5 @@
 ---
-title: "Jeopardy Daily Double Locations"
+title: "Jeopardy Daily Double Heatmaps"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -25,7 +25,6 @@ dd <- dd %>%
   rename("dd_weighting" = "weight") %>% 
   mutate(y_pos = factor(y_pos, levels = c(1, 2, 3, 4, 5)),
          y_pos = factor(y_pos, levels = rev(levels(y_pos))),
-
          x_pos = factor(x_pos, levels = c(1, 2, 3, 4, 5, 6)),
          x_pos = fct_recode(x_pos, 
                             "Category 1" = "1",
