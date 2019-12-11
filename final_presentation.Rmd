@@ -11,6 +11,10 @@ What tiles on the Jeopardy board are most likely to be a Daily Double?
 
 ## Introduction
 
+Why did we ask this question?
+
+
+
 ## Methods
 
 Finding the position of the Daily Double:
@@ -106,5 +110,11 @@ weighted_jeopardy_board %>%
 ```
 
 ## Results
+
+Flex Dashboard:
+
+- Daily Double Round 1 since 2001
+- Daily Double Round 2 since 2001
+- Daily Double Location by year
 
 ## Conclusions
