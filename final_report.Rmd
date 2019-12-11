@@ -115,5 +115,10 @@ weighted_jeopardy_board %>%
 # Results: 
 What did you find out? Most of these slides should be figures or tables. Discuss your interpretation of your results as you present them. Ideally, you should be able to show your main results in about 3 slides, with one figure or table per slide.
 
+The heatmaps for all years, separated by rounds, revealed interesting results. In round 1, the daily double most often occurred in category 1 and point value 400 (7.33%). Other “hot” points were category 3, value 400 (6.81%) and category 1, value 500 (6.75%). The least likely placements were across all categories in value 100 (0.35% or less) and in categories 2 (4.63% or less) and 6 (4.27% or less). Value 400 is favored across all categories (4.27% – 7.33%). In round 2, the daily double was most often located in category 1, value 400 (7.06%). The other common positions were category 5, value 400 (6.59%) and category 3, value 400 (6.41%). The likely occurrences were across value 100 (0.51% or less) and down category 2 (4.78% or less). Value 400 is elected as the position most often across categories (4.75% – 7.06%). 
+
+Overall, the occurrence of the daily double remained extremely similar across round 1 and round 2. Our group was surprised by this outcome because we had hypothesized the rounds would differ. We were also fascinated to see the lack of variability in location. Our assumption was that the location would vary around the lower middle section of the board. 
+
+
 # Conclusions: 
 So what? How do your results compare with what other people have found out about your research question? Based on what you found, are there now other things you want to check out?
