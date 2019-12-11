@@ -74,7 +74,6 @@ test_final <- test2 %>%
   rename("dd_value" = "value.y",
          "value" = "value.x") 
 
-write.csv(test_final,"final_data.csv", row.names = FALSE)
 
 ### Begining of Molly's code
 library(dplyr)
