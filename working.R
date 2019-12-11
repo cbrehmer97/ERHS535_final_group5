@@ -74,6 +74,8 @@ test_final <- test2 %>%
   rename("dd_value" = "value.y",
          "value" = "value.x") 
 
+write.csv(test_final,"final_data.csv", row.names = FALSE)
+
 ### Begining of Molly's code
 library(dplyr)
 library(tidyr)  
@@ -273,6 +275,7 @@ dd_2 <- dd %>%
                       range = c(2000, 1600, 1200, 800, 400), 
                       dtick = 400, tick0 = 2000))
 dd_2
+sum(dd_2$number_of_doubles)
 ###End Nikki's code
 
 ###Begining of Molly's code
