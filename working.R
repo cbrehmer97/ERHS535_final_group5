@@ -261,7 +261,7 @@ dd_2 <- dd %>%
     ) %>%
   layout(title = "Number of Daily Doubles, Round 2", 
          xaxis = list(title = ""), 
-         yaxis = list(title = ""))
+         yaxis = list(title = "", dtick = 400, tick0 = 400))
 dd_2
 
 ###End Nikki's code
