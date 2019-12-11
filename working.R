@@ -213,22 +213,23 @@ library(plotly)
 
 #Create heat maps by round
 #Round 1
-dd_1 <- dd %>%
-  filter(round == "1")
 
-dd_1 %>% 
+dd_1 <- dd %>% 
+  filter(round == "1") %>%
+  mutate(categories_heatmap = case_when(x_pos == "1" ~ "Category 1",
+                                        x_pos == "2" ~ "Category 2",
+                                        x_pos == "3" ~ "Category 3",
+                                        x_pos == "4" ~ "Category 4",
+                                        x_pos == "5" ~ "Category 5",
+                                        x_pos == "6" ~ "Category 6")) %>%
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
-  mutate(y_pos = factor(y_pos), 
-         y_pos = 
-           factor(y_pos, 
-                  levels = rev(levels(y_pos)))) %>%
-  group_by(x_pos, y_pos) %>% 
+  group_by(categories_heatmap, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   plot_ly(
-    x = ~ x_pos,
+    x = ~ categories_heatmap,
     y = ~ y_pos,
     z = ~ number_of_doubles,
-    text = ~paste(x_pos, y_pos, number_of_doubles),
+    text = ~paste(categories_heatmap, y_pos, number_of_doubles),
     hoverinfo = "text",
     colors = "Blues",
     type = 'heatmap',
@@ -237,21 +238,22 @@ dd_1 %>%
   layout(title = "Number of Daily Doubles, Round 1", 
          xaxis = list(title = ""), 
          yaxis = list(title = ""))
+dd_1
 
 #Round 2
 dd_2 <- dd %>%
-  filter(round == "2")
-
-dd_2 %>% 
+  filter(round == "2") %>%
+  mutate(categories_heatmap = case_when(x_pos == "1" ~ "Category 1",
+                                        x_pos == "2" ~ "Category 2",
+                                        x_pos == "3" ~ "Category 3",
+                                        x_pos == "4" ~ "Category 4",
+                                        x_pos == "5" ~ "Category 5",
+                                        x_pos == "6" ~ "Category 6")) %>%
   mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
-  mutate(y_pos = factor(y_pos), 
-         y_pos = 
-           factor(y_pos, 
-                  levels = rev(levels(y_pos)))) %>%
-  group_by(x_pos, y_pos) %>% 
+  group_by(categories_heatmap, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   plot_ly(
-    x = ~ x_pos,
+    x = ~ categories_heatmap,
     y = ~ y_pos,
     z = ~ number_of_doubles,
     type = 'heatmap',
@@ -260,6 +262,7 @@ dd_2 %>%
   layout(title = "Number of Daily Doubles, Round 2", 
          xaxis = list(title = ""), 
          yaxis = list(title = ""))
+dd_2
 
 ###End Nikki's code
 
