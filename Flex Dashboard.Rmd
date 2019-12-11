@@ -1,5 +1,5 @@
 ---
-title: "Daily Double Locations"
+title: "Jeopardy Daily Double Locations"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -17,43 +17,14 @@ Biostatistical Introduction. Oxford, table A.3)
 
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 library(readr)
-
-dd <- read_csv("data/data_final.csv")
-```
-
-
-Column {.tabset .tabset-fade}
------------------------------------------------------------------------
-
-### Chart A
-
-```{r}
-
-
-
-```
-
-
-### Chart AA
-
-```{r}
-
-```
-
-Column {data-width=350}
------------------------------------------------------------------------
-
-### Chart B
-
-```{r}
 library(plotly)
 library(forcats)
+library(lubridate)
+library(tidyr)
 
-#Create heat maps by round
-#Round 1
-dd_1 <- dd %>%
-  filter(round == "1") %>% 
-  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+dd <- read_csv("data/data_final.csv") 
+dd <- dd %>% 
+  rename("dd_weighting" = "weight") %>% 
   mutate(y_pos = factor(y_pos, levels = c(1, 2, 3, 4, 5)),
          y_pos = factor(y_pos, levels = rev(levels(y_pos))),
 
@@ -64,53 +35,113 @@ dd_1 <- dd %>%
                             "Category 3" = "3",
                             "Category 4" = "4",
                             "Category 5" = "5",
-                            "Category 6" = "6")) %>%
-  group_by(x_pos, y_pos) %>% 
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
-  mutate(percent = round( number_of_doubles/2476*100, digits = 2))
+                            "Category 6" = "6")) 
+```
 
-dd_1 %>% 
+
+Column 
+-----------------------------------------------------------------------
+
+### Daily Double Locations by Year
+
+```{r}
+daily_double_year <- dd %>% 
+  mutate(year = year(air_date)) %>% 
+  group_by(x_pos, y_pos, year) %>%
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  ungroup() %>% 
+  group_by(year) %>% 
+  mutate(Percent = round(number_of_doubles/sum(number_of_doubles) * 100), 
+         digits = 2) %>% 
+  nest()
+
+daily_double_year %>% 
+  unnest() %>% 
   plot_ly(
     x = ~ x_pos,
     y = ~ y_pos,
-    z = ~ number_of_doubles,
-    colors = "Blues",
-    type = 'heatmap',
-    hovertemplate = paste("Daily Double Count: %{z:,}<br>",
+    z = ~ Percent,
+    frame = ~ year,
+    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
                           "<extra></extra>"),
-    reversescale = FALSE
-    ) %>%
-  layout(xaxis = list(title = "", side = "top"), 
-         yaxis = list(title = ""),
-         legend = list(title = "Daily Double Count")) 
+    colors = "Blues",
+    type = 'heatmap'
+) %>% 
+  layout(title = list(text = ""), 
+         xaxis = list(title = "", 
+                      side = 'top'),
+          yaxis = list(title = ""))
 
 
 ```
 
-### Chart C
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Daily Doubles Round 1
+
+```{r}
+# Create heat maps by round
+# Round 1
+dd_1 <- dd %>% 
+  filter(round == "1") %>%
+  mutate(y_pos = fct_recode(y_pos,
+                            "200" = "1",
+                            "400" = "2",
+                            "600" = "3",
+                            "800" = "4",
+                            "1000" = "5")) %>% 
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  mutate(Percent = round(number_of_doubles/2476*100, digits = 2)) %>%
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ Percent,
+    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
+                          "<extra></extra>"),
+    colors = "Blues",
+    type = 'heatmap'
+    ) %>%
+  layout(title = list(text = ""), 
+         xaxis = list(title = "", 
+                      side = 'top'),
+         yaxis = list(title = ""))
+dd_1
+
+
+```
+
+### Daily Doubles in Round 2
 
 ```{r}
 #Round 2
 dd_2 <- dd %>%
-  filter(round == "2")
-
-dd_2 %>% 
-  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
-  mutate(y_pos = factor(y_pos), 
-         y_pos = 
-           factor(y_pos, 
-                  levels = rev(levels(y_pos)))) %>%
+  filter(round == "2") %>%
+  mutate(y_pos = fct_recode(y_pos,
+                            "400" = "1",
+                            "800" = "2",
+                            "1200" = "3",
+                            "1600" = "4",
+                            "2000" = "5")) %>% 
   group_by(x_pos, y_pos) %>% 
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  mutate(Percent = round(number_of_doubles/4887*100, digits = 2)) %>%
   plot_ly(
     x = ~ x_pos,
     y = ~ y_pos,
-    z = ~ number_of_doubles,
-    type = 'heatmap',
-    reversescale = TRUE
+    z = ~ Percent,
+    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
+                          "<extra></extra>"),
+    colors = "Blues",
+    type = 'heatmap'
     ) %>%
-  layout(title = "Number of Daily Doubles, Round 2", 
-         xaxis = list(title = ""), 
+  layout(title = list(text = ""), 
+         xaxis = list(title = "", 
+                      side = 'top'), 
          yaxis = list(title = ""))
+dd_2
 ```
 
