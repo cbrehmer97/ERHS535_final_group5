@@ -14,16 +14,22 @@ What positions on the Jeopardy board are most likely to be a Daily Double?
 ## Introduction
 
 - Importance to the game (James Holzhauer)
-- Other research
+<br><br>
+- Previous analyses (none over time)
+<br><br>
 - Challenge of finding position
+<br><br>
 - Visual representation
 
 ## Methods
 
-Finding the position of the Daily Double:
+- Only included episodes from dates beyond November 26, 2001 
+<br><br>
+- Finding x position of daily double (filtered to episodes with 12 categories)
+<br><br>
+- Finding y position of daily double (Weighted across missing values)
 
-- x position (location of the categories)
-- y position (location of the values)
+
 
 ```{r, echo = FALSE, message = FALSE, include = FALSE}
 library(tidyverse)
@@ -119,10 +125,20 @@ Flex Dashboard:
 - Daily Double Round 1 since 2001
 - Daily Double Round 2 since 2001
 - Daily Double Location by year
+<br><br>
+- Daily Doubles are not evenly distributed across the board
+- No differences in daily double location between Round 1 and Round 2
+- 15 out of 19 years had daily doubles within the 800/1600 row
 
 ## Conclusions
 
-
+- Similar to previous analyses
+    - https://flowingdata.com/2015/03/03/where-to-find-jeopardy-daily-doubles/
+<br><br>
+- Shift in location in 2016
+    - Arthur Chu and subsequent analyses
+<br><br>
+- Future locations (pattern or random)
 
 ## Overview of Approach
 
