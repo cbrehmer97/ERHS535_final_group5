@@ -19,6 +19,17 @@ What positions on the Jeopardy board are most likely to be a Daily Double? Sever
 
 ## Methods: 
 
+The Jeopardy dataset utilized was found on GitHub which included the air date, round, daily double information, category, value, question, answer, comments, and notes. The dataset was filtered to only include dates beyond November 26, 2001. On that date, there was a change in the point values within the rounds (for example, round one went from values of 100, 200, 300, 400, and 500 to 200, 400, 600, 800 and 1000). During the point value update, there could have been other changes made to Jeopardy impacting the daily double locations; therefore, we have excluded dates prior to the change. 
+
+There were two main challenges in finding the positions of the daily double questions:
+
+1. Finding the x position (the location of the categoires).
+2. Finding the y position (the location of the values). 
+
+Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by x location per episode (i.e. Category 1, Category 2, etc.). 
+
+In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any of the missing value locations (Figure 1). To solve the issue, the daily double was looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' value locations (Figure 2). 
+
 ```{r, echo = FALSE}
 library(tidyverse)
 library(ggplot2)
@@ -64,18 +75,6 @@ weighted_jeopardy_board <- jeopardy_board %>%
                           NA, NA, NA, NA, NA)) 
 
 ```
-
-The Jeopardy dataset utilized was found on GitHub which included the air date, round, daily double information, category, value, question, answer, comments, and notes. The dataset was filtered to only include dates beyond November 26, 2001. On that date, there was a change in the point values within the rounds (for example, round one went from values of 100, 200, 300, 400, and 500 to 200, 400, 600, 800 and 1000). During the point value update, there could have been other changes made to Jeopardy impacting the daily double locations; therefore, we have excluded dates prior to the change. 
-
-There were two main challenges in finding the positions of the daily double questions:
-
-1. Finding the x position (the location of the categoires).
-2. Finding the y position (the location of the values). 
-
-Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by x location per episode (i.e. Category 1, Category 2, etc.). 
-
-In addition, not every question (n = 5) within a category was availabe in the dataset. This was espeically challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any of the missing value locations (Figure 1). To solve the issue, the daily double was looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' value locations (Figure 2). 
-
       
 ```{r, echo = FALSE, fig.height= 4, fig.width = 7}
 jeopardy_board %>% 
@@ -115,12 +114,95 @@ weighted_jeopardy_board %>%
 ```
 
 ## Results
-What did you find out? Most of these slides should be figures or tables. Discuss your interpretation of your results as you present them. Ideally, you should be able to show your main results in about 3 slides, with one figure or table per slide.
 
 The heatmaps for all years, separated by rounds, displays interesting results. In round 1, the daily double most often occurs in category 1, point value 800 (7.33%). Other “hot” points are category 4, value 800 (6.81%) and category 1, value 1000 (6.75%). The least likely placements are across all categories in value 100 (0.35% or less) and in categories 2 (4.63% or less) and 6 (4.27% or less). Value 800 is favored across all categories (4.27% – 7.33%). In round 2, the daily double is most often located in category 1, value 1600 (7.06%). The other common positions are category 5, value 1600 (6.59%) and category 3, value 1600 (6.41%). The least likely occurrences are across value 100 (0.51% or less) and down category 2 (4.78% or less) and category 6 (4.75% or less). Value 1600 is elected for the position most often across categories (4.75% – 7.06%). Overall, the occurrence of the daily double remains extremely similar across round 1 and round 2 for the years analyzed. These results are visually presented in Figure 3 (round 1) and Figure 4 (round 2).
 
 As a secondary question, the heatmaps for all data (rounds 1 and 2) were faceted by year to look at changes over time. Since the rounds were similar in the initail analysis, the data was not seperated by round. The results for years 2001 - 2015 look similar to the results by round. The "hot" points are similar as well as the overall pattern. In 2016, there seems to be a shift away from the traditional spots. Previously, catergory 2 was one of the least likely columns but after 2016 the percentage surpassed the percentages in catergory 1 (previosuly, the most likely column). There also seems to be a shift from row 4 to row 3. Before 2016, rows 4 and 5 were the most likely to contain a Daily Double. After 2016, row 3 a higher percentage of Daily Doubles. The pattern after 2016 also seems to have more randomness than prior to 2016. 
 
+```{r Load Data}
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(forcats)
+library(tidyr)
+
+jeopardy_raw <- read_tsv("data/master_season1-35.tsv")
+
+#initial clean
+jeopardy_clean <- jeopardy_raw %>%
+  filter(air_date > ymd("2001-11-26") & round != 3) %>% 
+  mutate(daily_double = case_when(daily_double == "yes" ~ 1,
+                                  daily_double == "no" ~ 0))
+
+#Function w mapping
+jeopardy_final <- jeopardy_clean %>% 
+  #Change "value" of daily double to be 5 to deal with issues expanding later on
+  mutate(dd_bet = case_when(daily_double == 1 ~ value,
+                            daily_double == 0 ~ 0),
+         value = case_when(daily_double == 1 ~ 5,
+                           daily_double == 0 ~ value)) %>% 
+  #Nest data by air date
+  group_by(air_date) %>% 
+  nest() %>% 
+  #Determine number of categories that appaeared in each episode and filter to only episodes with all catagories asked
+  mutate(categories_unique = map(data, ~ unique(select(., category))),
+         categories_asked = map(data, ~ select(., round, category, 
+                                               value, dd_bet, daily_double)),
+         num_categories = map(categories_unique, ~ nrow(.))) %>% 
+  unnest(num_categories) %>% 
+  filter(num_categories == 12) %>% 
+  #Assigns x position to each category and creates "perfect" data frame
+  mutate(categories_unique = map(categories_unique, ~ rownames_to_column(., var = "x_pos")),
+         perfect_pos = map2(categories_unique, categories_asked, ~full_join(.x, .y)),
+         perfect_pos = map(perfect_pos, ~ group_by(., round)),
+         perfect_pos = map(perfect_pos, ~ expand(., x_pos, value))) %>% 
+  mutate(#Determine the categories where the DD was asked
+         categories_dd = map(categories_asked, ~ filter(., daily_double == 1)),
+         categories_dd = map(categories_dd, ~ select(., category)),
+         #Filter each episode data to only contain information about category where DD was asked
+         dd_weight = map2(categories_asked, categories_dd, ~ right_join(.x, .y, by = "category")),
+         #Weight the chance that DD was asked at y position based on number of questions asked in each category
+         dd_weight = map(dd_weight, ~ group_by(., category)),
+         dd_weight = map(dd_weight, ~ mutate(., count = n(),
+                                                         weight = if_else(count == 5, 1, 1/(6-count)))),
+         #Full join to get x position of each category
+         categories_perfect = map2(categories_unique, perfect_pos, ~ full_join(.x, .y, by = c("x_pos"))),
+         #Make perfect data frame for daily double categories
+         dd_perfect = map2(categories_perfect, categories_asked, ~ full_join(.x, .y, by = c("round", "category", "value"))),
+         dd_perfect = map2(dd_perfect, categories_dd, ~ right_join(.x, .y, by = "category")),
+         #Filter down to what the weight should be for the questions in the DD category
+         dd_weight = map(dd_weight, ~ select(., category, weight)),
+         dd_weight = map(dd_weight, ~ distinct(.)),
+         #Add weight to places where DD could have been asked
+         dd_perfect = map2(dd_perfect, dd_weight,
+                                    ~ full_join(.x, .y, by = "category")),
+         dd_perfect = map(dd_perfect, ~ mutate(., daily_double = case_when(is.na(daily_double) == TRUE ~ weight,
+                                                                                             is.na(daily_double) == FALSE ~ daily_double))),
+         #Remove expanded DD value of 5
+         dd_perfect = map(dd_perfect, ~ filter(., value != 5)),
+         categories_perfect = map(categories_perfect, ~ filter(., value != 5)),
+         #Add y position
+         categories_perfect = map(categories_perfect, ~ group_by(., category)),
+         categories_perfect = map(categories_perfect, ~ mutate(., y_pos = c("1", "2", "3", "4", "5"))),
+         #Combine perfect daily double and all categories into one final dataframe
+         data_keep = map2(categories_perfect, dd_perfect, ~ full_join(.x, .y, by = c("x_pos", "category", "round", "value")))) %>% 
+  select(air_date, data_keep) %>% 
+  unnest(cols = data_keep) %>% 
+  filter(daily_double != 0) %>% 
+  select(air_date, category, round, x_pos, y_pos, value, weight) %>% 
+  mutate(x_pos = case_when(x_pos == 7 | x_pos == 1 ~ 1,
+                           x_pos == 8 | x_pos == 2 ~ 2,
+                           x_pos == 9 | x_pos == 3 ~ 3,
+                           x_pos == 10 | x_pos == 4 ~ 4,
+                           x_pos == 11 | x_pos == 5 ~ 5,
+                           x_pos == 12 | x_pos == 6 ~ 6)) %>% 
+  mutate(daily_double = 1) 
+
+
+write_csv(jeopardy_final, "data/data_final.csv")
+
+```
 
 ```{r, warning = FALSE, error = FALSE, message = FALSE, echo= FALSE}
 library(readr)
@@ -131,7 +213,7 @@ library(tidyr)
 library(purrr)
 
 
-dd <- read_csv("data/data_final.csv") 
+dd <- jeopardy_final 
 dd <- dd %>% 
   rename("dd_weighting" = "weight") %>% 
   mutate(y_pos = factor(y_pos, levels = c(1, 2, 3, 4, 5)),
