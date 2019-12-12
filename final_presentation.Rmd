@@ -154,6 +154,23 @@ Flex Dashboard:
 
 ## Overview of Approach
 
+Create "perfect" data frames
+
+
+
+
 ## Interesting Packages or Techniques
+
+Creating perfect data frame
+expand
+
+Mapping
+map
+map2
+
+Joining
+full_join
+right_join
+left_join
 
 ## Lessons Learned
