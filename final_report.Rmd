@@ -5,6 +5,7 @@ date: "12/9/2019"
 output:
   word_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -75,7 +76,19 @@ weighted_jeopardy_board <- jeopardy_board %>%
                           NA, NA, NA, NA, NA)) 
 
 ```
-      
+
+The Jeopardy dataset utilized was found on GitHub which included the air date, round, daily double information, category, value, question, answer, comments, and notes. The dataset was filtered to only include dates beyond November 26, 2001. On that date, there was a change in the point values within the rounds (for example, round one went from values of 100, 200, 300, 400, and 500 to 200, 400, 600, 800 and 1000). During the point value update, there could have been other changes made to Jeopardy impacting the daily double locations; therefore, we have excluded dates prior to the change. 
+
+There were two main challenges in finding the positions of the daily double questions:
+
+1. Finding the x position (the location of the categories).
+2. Finding the y position (the location of the values). 
+
+Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by x location per episode (i.e. Category 1, Category 2, etc.). 
+
+In addition, not every question (n = 5) within a category was available in the dataset. This was especially challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any of the missing value locations (Figure 1). To solve the issue, the daily double was looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' value locations (Figure 2).
+
+
 ```{r, echo = FALSE, fig.height= 4, fig.width = 7}
 jeopardy_board %>% 
    mutate(y_pos = factor(y_pos), 
@@ -117,7 +130,7 @@ weighted_jeopardy_board %>%
 
 The heatmaps for all years, separated by rounds, displays interesting results. In round 1, the daily double most often occurs in category 1, point value 800 (7.33%). Other “hot” points are category 4, value 800 (6.81%) and category 1, value 1000 (6.75%). The least likely placements are across all categories in value 100 (0.35% or less) and in categories 2 (4.63% or less) and 6 (4.27% or less). Value 800 is favored across all categories (4.27% – 7.33%). In round 2, the daily double is most often located in category 1, value 1600 (7.06%). The other common positions are category 5, value 1600 (6.59%) and category 3, value 1600 (6.41%). The least likely occurrences are across value 100 (0.51% or less) and down category 2 (4.78% or less) and category 6 (4.75% or less). Value 1600 is elected for the position most often across categories (4.75% – 7.06%). Overall, the occurrence of the daily double remains extremely similar across round 1 and round 2 for the years analyzed. These results are visually presented in Figure 3 (round 1) and Figure 4 (round 2).
 
-As a secondary question, the heatmaps for all data (rounds 1 and 2) were faceted by year to look at changes over time. Since the rounds were similar in the initail analysis, the data was not seperated by round. The results for years 2001 - 2015 look similar to the results by round. The "hot" points are similar as well as the overall pattern. In 2016, there seems to be a shift away from the traditional spots. Previously, catergory 2 was one of the least likely columns but after 2016 the percentage surpassed the percentages in catergory 1 (previosuly, the most likely column). There also seems to be a shift from row 4 to row 3. Before 2016, rows 4 and 5 were the most likely to contain a Daily Double. After 2016, row 3 a higher percentage of Daily Doubles. The pattern after 2016 also seems to have more randomness than prior to 2016. 
+As a secondary question, the heatmaps for all data (rounds 1 and 2) were faceted by year to look at changes over time. Since the rounds were similar in the initial analysis, the data was not separated by round. The results for years 2001 - 2015 look similar to the results by round. The "hot" points are similar as well as the overall pattern. In 2016, there seems to be a shift away from the traditional spots. Previously, category 2 was one of the least likely columns but after 2016 the percentage surpassed the percentages in category 1 (previously, the most likely column). There also seems to be a shift from row 4 to row 3. Before 2016, rows 4 and 5 were the most likely to contain a Daily Double. After 2016, row 3 a higher percentage of Daily Doubles. The pattern after 2016 also seems to have more randomness than prior to 2016.
 
 ```{r, warning = FALSE, error = FALSE, message = FALSE, echo= FALSE}
 library(readr)
@@ -168,6 +181,7 @@ dd_1 <- dd %>%
   scale_x_discrete(position = "top")
 dd_1
 ```
+\
 Figure 3. Percent of Daily Doubles by Position in Round 1
 \
 \
@@ -199,12 +213,13 @@ dd_2 <- dd %>%
 dd_2
 
 ```
+\
 Figure 4. Percent of Daily Doubles by Position in Round 2
 \
 \
 \
 \
-```{r Daily Double Heatmap by year, fig.height = 10, echo= FALSE}
+```{r Daily Double Heatmap by year, fig.height = 7, echo= FALSE}
 dd %>% 
   mutate(year = year(air_date),
          y_pos = fct_recode(y_pos,
@@ -233,13 +248,13 @@ dd %>%
   facet_wrap(~year, ncol = 4)
 
 ```
+\
 Figure 5. Percent of Daily Doubles by Position Faceted by Year
 \
 \
 \
 \
+
 ## Conclusions
 
-The results of this analysis are very similar to previous analyses on Daily Double location by round. One of the original analyses of Daily Double location was conducted by Nathan Yau (https://flowingdata.com/2015/03/03/where-to-find-jeopardy-daily-doubles/) in 2015. The results of this study look similar to his heatmap that shows the location of all Daily Doubles for 31 seasons. Yau's analysis was done because of a Jeopardy contestant, Arthur Chu, that appeared on the show in 2014. Arthur Chu found success on the show by jumping around the board hunting for the Daily Doubles. He was not the first to adopt this strategy, but was one of the most controversial players because of his approach. Since 2015, there have been other analyses that looked at the same question and found similar results by round. To our knowledge, no other analyses have look at the data by year. This analysis included data up to 2019 and showed a noticable shift in location around 2015/2016. This shift likely occured because of Arthur Chu and the subsequent analyses of Daily Double locations. This change should be analyzed over the next few years to see if another pattern is established or if Jeopardy adopts a more random Daily Double placement.
-
-
+The results of this analysis are very similar to previous analyses on Daily Double location by round. One of the original analyses of Daily Double location was conducted by Nathan Yau (https://flowingdata.com/2015/03/03/where-to-find-jeopardy-daily-doubles/) in 2015. The results of this study look similar to his heatmap that shows the location of all Daily Doubles for 31 seasons. Yau's analysis was done because of a Jeopardy contestant, Arthur Chu, that appeared on the show in 2014. Arthur Chu found success on the show by jumping around the board hunting for the Daily Doubles. He was not the first to adopt this strategy, but was one of the most controversial players because of his approach. Since 2015, there have been other analyses that looked at the same question and found similar results by round. To our knowledge, no other analyses have look at the data by year. This analysis included data up to 2019 and showed a noticeable shift in location around 2015/2016. This shift likely occurred because of Arthur Chu and the subsequent analyses of Daily Double locations. This change should be analyzed over the next few years to see if another pattern is established or if Jeopardy adopts a more random Daily Double placement.

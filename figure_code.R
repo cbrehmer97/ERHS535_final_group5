@@ -1,19 +1,4 @@
----
-title: "Jeopardy Daily Double Locations"
-output: 
-  flexdashboard::flex_dashboard:
-    orientation: columns
-    vertical_layout: fill
-    theme: cerulean
----
-
-```{r setup, include=FALSE}
-library(flexdashboard)
-```
-
-The following are Jeopardy's Daily Double Heatmaps by year and round (aggregating data from all years). 
-
-```{r, warning = FALSE, error = FALSE, message = FALSE}
+## Figures that plot data from cleaning_code.R
 library(readr)
 library(plotly)
 library(forcats)
@@ -25,7 +10,7 @@ dd <- dd %>%
   rename("dd_weighting" = "weight") %>% 
   mutate(y_pos = factor(y_pos, levels = c(1, 2, 3, 4, 5)),
          y_pos = factor(y_pos, levels = rev(levels(y_pos))),
-
+         
          x_pos = factor(x_pos, levels = c(1, 2, 3, 4, 5, 6)),
          x_pos = fct_recode(x_pos, 
                             "Category 1" = "1",
@@ -34,15 +19,9 @@ dd <- dd %>%
                             "Category 4" = "4",
                             "Category 5" = "5",
                             "Category 6" = "6")) 
-```
 
+## Daily Double Locations by Year
 
-Column 
------------------------------------------------------------------------
-
-### Daily Double Locations by Year
-
-```{r}
 daily_double_year <- dd %>% 
   mutate(year = year(air_date)) %>% 
   group_by(x_pos, y_pos, year) %>%
@@ -64,24 +43,15 @@ daily_double_year %>%
                           "<extra></extra>"),
     colors = "Blues",
     type = 'heatmap'
-) %>% 
+  ) %>% 
   layout(title = list(text = ""), 
          xaxis = list(title = "", 
                       side = 'top'),
-          yaxis = list(title = ""))
+         yaxis = list(title = ""))
 
 
-```
+## Daily Double Locations by Round
 
-
-
-Column {data-width=350}
------------------------------------------------------------------------
-
-### Daily Doubles in Round 1
-
-```{r}
-# Create heat maps by round
 # Round 1
 dd_1 <- dd %>% 
   filter(round == "1") %>%
@@ -102,20 +72,14 @@ dd_1 <- dd %>%
                           "<extra></extra>"),
     colors = "Blues",
     type = 'heatmap'
-    ) %>%
+  ) %>%
   layout(title = list(text = ""), 
          xaxis = list(title = "", 
                       side = 'top'),
          yaxis = list(title = ""))
 dd_1
 
-
-```
-
-### Daily Doubles in Round 2
-
-```{r}
-#Round 2
+# Round 2
 dd_2 <- dd %>%
   filter(round == "2") %>%
   mutate(y_pos = fct_recode(y_pos,
@@ -135,11 +99,9 @@ dd_2 <- dd %>%
                           "<extra></extra>"),
     colors = "Blues",
     type = 'heatmap'
-    ) %>%
+  ) %>%
   layout(title = list(text = ""), 
          xaxis = list(title = "", 
                       side = 'top'), 
          yaxis = list(title = ""))
 dd_2
-```
-

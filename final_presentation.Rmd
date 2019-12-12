@@ -6,6 +6,18 @@ output:
   beamer_presentation: default
   ioslides_presentation: default
 ---
+<style type="text/css">
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+</style>
 
 ## Research Question
 
@@ -14,15 +26,22 @@ What positions on the Jeopardy board are most likely to be a Daily Double?
 ## Introduction
 
 - Importance to the game (James Holzhauer)
-- Other research
+<br><br>
+- Previous analyses (none over time)
+<br><br>
 - Challenge of finding position
+<br><br>
 - Visual representation
 
 ## Methods
 
 - Only included episodes from dates beyond November 26, 2001 
+<br><br>
 - Finding x position of daily double (filtered to episodes with 12 categories)
+<br><br>
 - Finding y position of daily double (Weighted across missing values)
+
+
 
 ```{r, echo = FALSE, message = FALSE, include = FALSE}
 library(tidyverse)
@@ -85,6 +104,9 @@ jeopardy_board %>%
   theme(legend.position = "none") + 
   geom_text(aes(label = text), color = "gray") +
   scale_x_discrete(position = "top") +
+  labs(caption = paste0("Figure 1. In Category 1, the 400, 600 and 800 values",
+  " were missing, and \na daily double question was asked. But it's unknown ",
+  "if the daily double was \nat the 400, 600 or 800 value position.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
@@ -103,6 +125,8 @@ weighted_jeopardy_board %>%
   theme(legend.position = "none") + 
   geom_text(aes(label = number_of_dd)) +
   scale_x_discrete(position = "top") +
+  labs(caption = paste0("Figure 2. The daily double within a category was ",
+                        "weighted acrossed all \nmissing values.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
@@ -113,19 +137,107 @@ Flex Dashboard:
 - Daily Double Round 1 since 2001
 - Daily Double Round 2 since 2001
 - Daily Double Location by year
-
+<br><br>
 - Daily Doubles are not evenly distributed across the board
 - No differences in daily double location between Round 1 and Round 2
 - 15 out of 19 years had daily doubles within the 800/1600 row
-- 
 
 ## Conclusions
 
+- Similar to previous analyses
+    - https://flowingdata.com/2015/03/03/where-to-find-jeopardy-daily-doubles/
+<br><br>
+- Shift in location in 2016
+    - Arthur Chu and subsequent analyses
+<br><br>
+- Future locations (pattern or random)
+
 ## Overview of Approach
+<ol>
+<li> Nest data by air date
+<br><br>
+<li> Pull out subsets of that data
+<br><br>
+<li> Modify subsets by:
+<ol type = "a">
+<li> Adding additional information (i.e. weight, x/y position) </li>
+<li> Manipulating data (i.e. expanding, further subsetting) </li>
+</ol>
+</li>
+</ol>
+<ol start = "3">
+<li> Rejoin dataframes to get desired information
+<br><br>
+<li> Create tidy dataset for plots
+</ol>
 
 ## Interesting Packages or Techniques
+<font size="4">
 
-- `map()`, `mutate()`, and `join`
-- `plot_ly()` 
+- Creating perfect data frame
+  + Package: `tidyr`
+  + Function(s): `expand()`
+<br><br>
+- Mapping
+  + Package: `purrr`
+  + Function(s): `map()`, `map2()`
+<br><br>
+- Joining
+  + Package: `dplyr`
+  + Function(s): `right_join()`, `full_join()`, `left_join()`
+<br><br>
+- Plotting
+  + Package: `plotly`
+  + Function(s): `plot_ly()`
+
+</font>
+
+## Examples
+<font size="4.5">
+
+- Input
+  + `categories_unique`: categories asked in each episode
+  + `categories_asked`: information about asked questions
+  
+```{r, eval=FALSE}
+mutate(categories_unique = map(categories_unique, 
+                            ~ rownames_to_column(., var = "x_pos")),
+         perfect_pos = map2(categories_unique, categories_asked, 
+                            ~ full_join(.x, .y)),
+         perfect_pos = map(perfect_pos, 
+                           ~ group_by(., round)),
+         perfect_pos = map(perfect_pos, 
+                           ~ expand(., x_pos, value)))
+```
+
+- Output
+  + `categories_unique`: x position assigned to each category
+  + `perfect_pos`: perfect df for each game
+  
+</font>
+
+## Examples
+
+<font size="4.5">
+
+- Input
+  + `dd_perfect`: perfect DD df
+  + `dd_weight`: df containing the weight to be assiged to DD questions
+  
+```{r, eval = FALSE}
+mutate(dd_perfect = map2(dd_perfect, dd_weight,
+                ~ full_join(.x, .y, by = "category")),
+dd_perfect = map(dd_perfect, 
+                 ~ mutate(., daily_double = case_when(
+                   is.na(daily_double) == TRUE ~ weight,
+                   is.na(daily_double) == FALSE ~ daily_double))))
+```
+
+- Output
+  + `dd_perfect`: perfect DD df with weights added
+
+</font>
 
 ## Lessons Learned
+
+1. Seemingly simple problems may not be simple to answer.
