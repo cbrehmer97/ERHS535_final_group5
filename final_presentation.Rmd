@@ -23,11 +23,18 @@ What positions on the Jeopardy board are most likely to be a Daily Double?
 
 ## Methods
 
+<<<<<<< HEAD
 - Only included episodes from dates beyond November 26, 2001 
 <br><br>
 - Finding x position of daily double (filtered to episodes with 12 categories)
 <br><br>
 - Finding y position of daily double (Weighted across missing values)
+=======
+Finding the position of the Daily Double:
+
+- x position (location of the categories)
+- y position (location of the values)
+>>>>>>> ec7b46fb65b8fbbebade3dd262e1174866b48e4a
 
 ```{r, echo = FALSE, message = FALSE, include = FALSE}
 library(tidyverse)
@@ -90,6 +97,9 @@ jeopardy_board %>%
   theme(legend.position = "none") + 
   geom_text(aes(label = text), color = "gray") +
   scale_x_discrete(position = "top") +
+  labs(caption = paste0("Figure 1. In Category 1, the 400, 600 and 800 values",
+  " were missing, and \na daily double question was asked. But it's unknown ",
+  "if the daily double was \nat the 400, 600 or 800 value position.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
@@ -108,6 +118,8 @@ weighted_jeopardy_board %>%
   theme(legend.position = "none") + 
   geom_text(aes(label = number_of_dd)) +
   scale_x_discrete(position = "top") +
+  labs(caption = paste0("Figure 2. The daily double within a category was ",
+                        "weighted acrossed all \nmissing values.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
@@ -118,6 +130,7 @@ Flex Dashboard:
 - Daily Double Round 1 since 2001
 - Daily Double Round 2 since 2001
 - Daily Double Location by year
+<<<<<<< HEAD
 <br><br>
 - Daily Doubles are not evenly distributed across the board
 - No differences in daily double location between Round 1 and Round 2
@@ -132,12 +145,15 @@ Flex Dashboard:
     - Arthur Chu and subsequent analyses
 <br><br>
 - Future locations (pattern or random)
+=======
+
+## Conclusions
+
+
+>>>>>>> ec7b46fb65b8fbbebade3dd262e1174866b48e4a
 
 ## Overview of Approach
 
 ## Interesting Packages or Techniques
-
-- `map()`, `mutate()`, and `join`
-- `plot_ly()` 
 
 ## Lessons Learned

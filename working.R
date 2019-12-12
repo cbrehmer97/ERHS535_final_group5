@@ -81,7 +81,8 @@ library(plotly)
 
 #Create heat maps by round
 #Round 1
-dd_1 <- jeopardy_final %>% 
+
+dd_1 <- dd %>% 
   filter(round == "1") %>%
   mutate(categories_heatmap = case_when(x_pos == "1" ~ "Category 1",
                                         x_pos == "2" ~ "Category 2",
@@ -89,9 +90,9 @@ dd_1 <- jeopardy_final %>%
                                         x_pos == "4" ~ "Category 4",
                                         x_pos == "5" ~ "Category 5",
                                         x_pos == "6" ~ "Category 6")) %>%
-  mutate(weight = as.numeric(weight)) %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(categories_heatmap, value) %>% 
-  summarise(number_of_doubles = sum(weight)) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
   mutate(Percent = round(number_of_doubles/2476*100, digits = 2)) %>%
   plot_ly(
     x = ~ categories_heatmap,
@@ -111,7 +112,7 @@ dd_1 <- jeopardy_final %>%
 dd_1
 
 #Round 2
-dd_2 <- jeopardy_final %>%
+dd_2 <- dd %>%
   filter(round == "2") %>%
   mutate(categories_heatmap = case_when(x_pos == "1" ~ "Category 1",
                                         x_pos == "2" ~ "Category 2",
@@ -119,9 +120,9 @@ dd_2 <- jeopardy_final %>%
                                         x_pos == "4" ~ "Category 4",
                                         x_pos == "5" ~ "Category 5",
                                         x_pos == "6" ~ "Category 6")) %>%
-  mutate(weight = as.numeric(weight)) %>% 
+  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
   group_by(categories_heatmap, value) %>% 
-  summarise(number_of_doubles = sum(weight)) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
   mutate(Percent = round(number_of_doubles/4887*100, digits = 2)) %>%
   plot_ly(
     x = ~ categories_heatmap,
@@ -142,3 +143,31 @@ dd_2 <- jeopardy_final %>%
 dd_2
 
 ###End Nikki's code
+
+###Begining of Molly's code
+year_plot <- dd %>% 
+  mutate(daily_double = as.numeric(daily_double),
+         year = year(air_date)) %>% 
+  group_by(x_pos, y_pos, year) %>%
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  ungroup() %>% 
+  mutate(y_pos = as.numeric(y_pos),
+         number_of_doubles = as.numeric(number_of_doubles)) %>% 
+  mutate(y_pos = factor(y_pos), 
+         y_pos = 
+           factor(y_pos, 
+                  levels = rev(levels(y_pos)))) %>% 
+  group_by(year) %>% 
+  nest()
+
+year_plot %>% 
+  unnest() %>% 
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ number_of_doubles,
+    frame = ~ year, 
+    text = ~ number_of_doubles,
+    type = 'heatmap',
+    reversescale = TRUE
+  ) 

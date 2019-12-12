@@ -8,209 +8,199 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = FALSE, 
-                      message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, messages = FALSE)
 ```
 
-## Loading and cleaning data (finding x and y locations for Daily Doubles)
+```{r}
+
+```
+
+
+## Load in Data
+This section of code is looking at only 1 round of 'perfect' games (all 30 tiles played).
 
 ```{r Load Data}
-library(tidyverse)
-library(magrittr)
+library(readr)
+library(dplyr)
 library(lubridate)
-library(plotly)
 library(forcats)
+
+jeopardy <- read_tsv("data/master_season1-35.tsv")
+
+
+## Filtering to ONLY look at Round 1
+clean_data <- jeopardy %>% 
+  filter(round == "1") %>% 
+  mutate(air_date = ymd(air_date))
+
+## Filtering to ONLY have the episodes where the entire board was asked. 
+perfect_round <- clean_data %>% 
+  group_by(air_date) %>% 
+  summarise(total_questions_asked = n()) %>% 
+  filter(total_questions_asked == "30")
+
+practice <- jeopardy %>% 
+  mutate(air_date = ymd(air_date)) %>% 
+  filter(round!= "3") %>% 
+  group_by(air_date, round, category) %>% 
+  summarise(number_categories = n()) %>% 
+  ungroup() %>% 
+  group_by(air_date, round) %>% 
+  summarise(number_categories = n()) %>% 
+  filter(number_categories == 6 )
+
+practice_2 <- jeopardy %>% 
+  right_join(practice, by = c("round", "air_date"))
+
+## Based on the position the questions are asked in the list, creating a column 
+## that has the category position, and the value of the question
+labeling_positions <- clean_data %>% 
+  right_join(perfect_round, by = c("air_date")) %>% 
+  group_by(air_date) %>% 
+  mutate(category_number =  c("Category 1", "Category 1", "Category 1", 
+                              "Category 1", "Category 1", 
+                              "Category 2", "Category 2", "Category 2", 
+                              "Category 2", "Category 2",
+                              "Category 3", "Category 3", "Category 3", 
+                              "Category 3", "Category 3", 
+                              "Category 4", "Category 4", "Category 4", 
+                              "Category 4", "Category 4", 
+                              "Category 5", "Category 5", "Category 5", 
+                              "Category 5", "Category 5",
+                              "Category 6", "Category 6", "Category 6", 
+                              "Category 6", "Category 6"),
+          value_number = c("100", "200", "300", "400", "500", 
+                           "100", "200", "300", "400", "500",
+                           "100", "200", "300", "400", "500", 
+                           "100", "200", "300", "400", "500",
+                           "100", "200", "300", "400", "500", 
+                           "100", "200", "300", "400", "500")) %>% 
+  mutate(daily_double = as.factor(daily_double),
+         daily_double = fct_recode(daily_double,
+                               "0" = "no",
+                               "1" = "yes"),
+         daily_double = as.character(daily_double))
+
+
+```
+
+## Summarizing Daily Double Counts
+
+This section of code is figuring out how many daily doubles occur in each tile. 
+```{r Summarising number of daily doubles}
+
+## Finding the number of daily doubles by category and value
+daily_double_positions <- labeling_positions %>% 
+  mutate(daily_double = as.numeric(daily_double),
+         year = year(air_date)) %>% 
+  group_by(category_number, value_number) %>%
+  summarise(number_of_doubles = sum(daily_double)) %>% 
+  ungroup() %>% 
+  mutate(value_number = as.numeric(value_number),
+         number_of_doubles = as.numeric(number_of_doubles))
+```
+
+## Heat Map (Version 1) with ggplot2
+
+```{r Heat Map with ggplot2, fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+library(ggplot2)
+
+plot <- daily_double_positions %>% 
+  ggplot(aes(x = category_number, y = value_number, 
+             fill = number_of_doubles )) +
+  geom_tile(color = "White", size = 0.1) +
+  geom_text(aes(label = round(number_of_doubles))) +
+  scale_fill_gradient(low = "white", high = "darkblue")
+
+print(plot)
+ggplotly(plot, tooltip = c("number_of_doubles", "category_number"))
+
+library(gganimate)
+#plot + transition_time(year) +
+  #labs(title = "Year: {frame_time}")
+#walk(plots, print)
+
+```
+
+## Plotly Heat Map
+
+```{r Heat Map with plotly}
+library(plotly)
+
+daily_double_positions %>% #use daily_double_year if you want by year
+  #unnest() %>% 
+  plot_ly(
+    x = ~ category_number,
+    y = ~ value_number,
+    z = ~ number_of_doubles,
+    #frame = ~ year,
+    type = 'heatmap', 
+  )
+
+```
+
+## Heat Maps by Year
+
+```{r Heat Map By Year}
 library(tidyr)
 
-jeopardy_raw <- read_tsv("data/master_season1-35.tsv")
-
-#initial clean
-jeopardy_clean <- jeopardy_raw %>%
-  filter(air_date > ymd("2001-11-26") & round != 3) %>% 
-  mutate(daily_double = case_when(daily_double == "yes" ~ 1,
-                                  daily_double == "no" ~ 0))
-
-#Function w mapping
-jeopardy_final <- jeopardy_clean %>% 
-  #Change "value" of daily double to be 5 to deal with issues expanding later on
-  mutate(dd_bet = case_when(daily_double == 1 ~ value,
-                            daily_double == 0 ~ 0),
-         value = case_when(daily_double == 1 ~ 5,
-                           daily_double == 0 ~ value)) %>% 
-  #Nest data by air date
-  group_by(air_date) %>% 
-  nest() %>% 
-  #Determine number of categories that appaeared in each episode and filter to only episodes with all catagories asked
-  mutate(categories_unique = map(data, ~ unique(select(., category))),
-         categories_asked = map(data, ~ select(., round, category, 
-                                               value, dd_bet, daily_double)),
-         num_categories = map(categories_unique, ~ nrow(.))) %>% 
-  unnest(num_categories) %>% 
-  filter(num_categories == 12) %>% 
-  #Assigns x position to each category and creates "perfect" data frame
-  mutate(categories_unique = map(categories_unique, ~ rownames_to_column(., var = "x_pos")),
-         perfect_pos = map2(categories_unique, categories_asked, ~full_join(.x, .y)),
-         perfect_pos = map(perfect_pos, ~ group_by(., round)),
-         perfect_pos = map(perfect_pos, ~ expand(., x_pos, value))) %>% 
-  mutate(#Determine the categories where the DD was asked
-         categories_dd = map(categories_asked, ~ filter(., daily_double == 1)),
-         categories_dd = map(categories_dd, ~ select(., category)),
-         #Filter each episode data to only contain information about category where DD was asked
-         dd_weight = map2(categories_asked, categories_dd, ~ right_join(.x, .y, by = "category")),
-         #Weight the chance that DD was asked at y position based on number of questions asked in each category
-         dd_weight = map(dd_weight, ~ group_by(., category)),
-         dd_weight = map(dd_weight, ~ mutate(., count = n(),
-                                                         weight = if_else(count == 5, 1, 1/(6-count)))),
-         #Full join to get x position of each category
-         categories_perfect = map2(categories_unique, perfect_pos, ~ full_join(.x, .y, by = c("x_pos"))),
-         #Make perfect data frame for daily double categories
-         dd_perfect = map2(categories_perfect, categories_asked, ~ full_join(.x, .y, by = c("round", "category", "value"))),
-         dd_perfect = map2(dd_perfect, categories_dd, ~ right_join(.x, .y, by = "category")),
-         #Filter down to what the weight should be for the questions in the DD category
-         dd_weight = map(dd_weight, ~ select(., category, weight)),
-         dd_weight = map(dd_weight, ~ distinct(.)),
-         #Add weight to places where DD could have been asked
-         dd_perfect = map2(dd_perfect, dd_weight,
-                                    ~ full_join(.x, .y, by = "category")),
-         dd_perfect = map(dd_perfect, ~ mutate(., daily_double = case_when(is.na(daily_double) == TRUE ~ weight,
-                                                                                             is.na(daily_double) == FALSE ~ daily_double))),
-         #Remove expanded DD value of 5
-         dd_perfect = map(dd_perfect, ~ filter(., value != 5)),
-         categories_perfect = map(categories_perfect, ~ filter(., value != 5)),
-         #Add y position
-         categories_perfect = map(categories_perfect, ~ group_by(., category)),
-         categories_perfect = map(categories_perfect, ~ mutate(., y_pos = c("1", "2", "3", "4", "5"))),
-         #Combine perfect daily double and all categories into one final dataframe
-         data_keep = map2(categories_perfect, dd_perfect, ~ full_join(.x, .y, by = c("x_pos", "category", "round", "value")))) %>% 
-  select(air_date, data_keep) %>% 
-  unnest(cols = data_keep) %>% 
-  filter(daily_double != 0) %>% 
-  select(air_date, category, round, x_pos, y_pos, value, weight) %>% 
-  mutate(x_pos = case_when(x_pos == 7 | x_pos == 1 ~ 1,
-                           x_pos == 8 | x_pos == 2 ~ 2,
-                           x_pos == 9 | x_pos == 3 ~ 3,
-                           x_pos == 10 | x_pos == 4 ~ 4,
-                           x_pos == 11 | x_pos == 5 ~ 5,
-                           x_pos == 12 | x_pos == 6 ~ 6)) %>% 
-  mutate(daily_double = 1) 
-
-
-write_csv(jeopardy_final, "data/data_final.csv")
-
-```
-
-```{r }
-dd <- read_csv("data/data_final.csv") 
-dd <- dd %>% 
-  rename("dd_weighting" = "weight") %>% 
-  mutate(y_pos = factor(y_pos, levels = c(1, 2, 3, 4, 5)),
-         y_pos = factor(y_pos, levels = rev(levels(y_pos))),
-
-         x_pos = factor(x_pos, levels = c(1, 2, 3, 4, 5, 6)),
-         x_pos = fct_recode(x_pos, 
-                            "Category 1" = "1",
-                            "Category 2" = "2",
-                            "Category 3" = "3",
-                            "Category 4" = "4",
-                            "Category 5" = "5",
-                            "Category 6" = "6")) 
-```
-
-## Jeopardy Daily Double Heatmap Round 1
-
-```{r Heatmap Round 1}
-
-dd_1 <- dd %>% 
-  filter(round == "1") %>%
-  mutate(y_pos = fct_recode(y_pos,
-                            "200" = "1",
-                            "400" = "2",
-                            "600" = "3",
-                            "800" = "4",
-                            "1000" = "5")) %>% 
-  group_by(x_pos, y_pos) %>% 
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
-  mutate(Percent = round(number_of_doubles/2476*100, digits = 2)) %>%
-  plot_ly(
-    x = ~ x_pos,
-    y = ~ y_pos,
-    z = ~ Percent,
-    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
-                          "<extra></extra>"),
-    colors = "Blues",
-    type = 'heatmap'
-    ) %>%
-  layout(title = list(text = ""), 
-         xaxis = list(title = "", 
-                      side = 'top'),
-         yaxis = list(title = ""))
-dd_1
-
-```
-
-## Jeopardy Daily Double Heatmap Round 2
-
-```{r}
-
-dd_2 <- dd %>%
-  filter(round == "2") %>%
-  mutate(y_pos = fct_recode(y_pos,
-                            "400" = "1",
-                            "800" = "2",
-                            "1200" = "3",
-                            "1600" = "4",
-                            "2000" = "5")) %>% 
-  group_by(x_pos, y_pos) %>% 
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
-  mutate(Percent = round(number_of_doubles/4887*100, digits = 2)) %>%
-  plot_ly(
-    x = ~ x_pos,
-    y = ~ y_pos,
-    z = ~ Percent,
-    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
-                          "<extra></extra>"),
-    colors = "Blues",
-    type = 'heatmap'
-    ) %>%
-  layout(title = list(text = ""), 
-         xaxis = list(title = "", 
-                      side = 'top'), 
-         yaxis = list(title = ""))
-dd_2
-
-```
-
-## Daily Double Heatmap by year
-
-```{r}
-
-daily_double_year <- dd %>% 
-  mutate(year = year(air_date)) %>% 
-  group_by(x_pos, y_pos, year) %>%
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+## Grouping by year, category and value_number
+daily_double_year <- labeling_positions %>% 
+  mutate(daily_double = as.numeric(daily_double),
+         year = year(air_date)) %>% 
+  group_by(category_number, value_number, year) %>%
+  summarise(number_of_doubles = sum(daily_double)) %>% 
   ungroup() %>% 
+  mutate(value_number = as.numeric(value_number),
+         number_of_doubles = as.numeric(number_of_doubles)) %>% 
+  mutate(value_number = factor(value_number), 
+                        value_number = 
+                                      factor(value_number, 
+                                      levels = rev(levels(value_number)))) %>% 
   group_by(year) %>% 
-  mutate(Percent = round(number_of_doubles/sum(number_of_doubles) * 100), 
-         digits = 2) %>% 
   nest()
 
-daily_double_year %>% 
-  unnest() %>% 
-  plot_ly(
-    x = ~ x_pos,
-    y = ~ y_pos,
-    z = ~ Percent,
-    frame = ~ year,
-    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
-                          "<extra></extra>"),
-    colors = "Blues",
-    type = 'heatmap'
-) %>% 
-  layout(title = list(text = ""), 
-         xaxis = list(title = "", 
-                      side = 'top'),
-          yaxis = list(title = ""))
 ```
 
+```{r Heat map by year, fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+library(purrr)
+
+dd_plots <- daily_double_year %>% 
+  mutate(plot = map(.x = data, 
+                     ~ ggplot(data = .x, aes(x = category_number, 
+                                             y = value_number, 
+                                             fill = number_of_doubles)) +
+                      geom_tile(color = "White", size = 0.1) +
+                      labs(x = NULL, 
+                           y = NULL, 
+                           fill = "Number of Daily Doubles",
+                           subtitle = year) +
+                      ggtitle("The Number of Daily Doubles in Each Position by Year") +
+                      scale_fill_continuous(high = "#132B43", 
+                                            low = "#56B1F7") +
+                      theme(legend.position = "bottom", 
+                            legend.box = "horizontal") +
+                      scale_x_discrete(position = "top")))
+
+print(dd_plots$plot)
+
+library(gganimate)
+walk(dd_plots, print)
+
+```
+
+
+```{r Daily Double Bet Data}
+
+daily_double_bets <- labeling_positions %>% 
+  filter(daily_double == "1") %>% 
+  group_by(category_number, value_number) %>% 
+  summarise(mean = mean(value), 
+            minimum = min(value), 
+            maximum = max(value)) %>% 
+  mutate(value_number = as.numeric(value_number)) %>% 
+  right_join(daily_double_positions)
+
+```
 
 
