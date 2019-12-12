@@ -66,16 +66,16 @@ weighted_jeopardy_board <- jeopardy_board %>%
 
 ```
 
-The Jeopardy dataset utilized was found on GitHub which included the air date, round, daily double information, category, value, question, answer, comments, and notes. The dataset was filtered to only include dates beyond November 26, 2001. On that date, there was a change in the point values within the rounds (for example, round one went from values of 100, 200, 300, 400, and 500 to 200, 400, 600, 800 and 1000). During the point value update, there could have been other changes made to Jeopardy impacting the daily double locations; therefore, we have excluded dates prior to the change. 
+The Jeopardy dataset utilized was found on GitHub which included the air date, round, daily double information, category, value, question, answer, comments, and notes. The dataset was filtered to only include dates beyond November 26, 2001. On that date, there was a change in the point values within the rounds (for example, round one went from values of 100, 200, 300, 400, and 500 to 200, 400, 600, 800 and 1000). During the point value update, there could have been other changes made to Jeopardy impacting the daily double locations (i.e. changes in how the positions were assigned). Therefore, we have excluded dates prior to the change. 
 
 There were two main challenges in finding the positions of the daily double questions:
 
 1. Finding the x position (the location of the categories).
 2. Finding the y position (the location of the values). 
 
-Not all categories per episode (n = 12) were available in the dataset. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by x location per episode (i.e. Category 1, Category 2, etc.). 
+Not all categories (n = 12) were avaiaible in the dataset for all episodes. To solve this issue, only episodes where all 12 categories were played were included. The assumption was that the dataset listed the categories in order by x location within episode (i.e. first category to appear was assigned a x position of 1). 
 
-In addition, not every question (n = 5) within a category was available in the dataset. This was especially challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any of the missing value locations (Figure 1). To solve the issue, the daily double was looked at as a 'missing value', and the y position of the daily double was weighted across the three 'missing' value locations (Figure 2).
+In addition, not every question (n = 5) within a category was available in the dataset. This was especially challenging when a category contained a daily double question. Since players select their own bid for daily doubles, the value within the dataset gave little information about the location on the y axis. If there were 2 missing questions and 1 daily double within a category, the daily double could be at any of the missing value locations (Figure 1). To solve the issue, the daily double was weighted across the unasked questions in the category (i.e. 2 missing questions in a daily double category would result in a 1/2 daily double at each missing position). 
 
       
 ```{r, echo = FALSE, fig.height= 4, fig.width = 7}
