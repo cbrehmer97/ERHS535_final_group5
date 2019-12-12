@@ -151,7 +151,7 @@ Create "perfect" data frames
 
 - Creating perfect data frame
   + `expand`
-
+  
 - Mapping
   + `map`
   + `map2`
