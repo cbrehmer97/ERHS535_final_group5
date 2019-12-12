@@ -3188,7 +3188,11 @@ slide:not(.current) .plotly.html-widget{
 <li>Creating perfect data frame
 
 <ul>
-<li><code>expand</code></li>
+<li><code>expand</code>
+
+<ul>
+<li>hi</li>
+</ul></li>
 </ul></li>
 <li>Mapping
 
@@ -3207,6 +3211,15 @@ slide:not(.current) .plotly.html-widget{
 
 </article></slide><slide class=""><hgroup><h2>Examples</h2></hgroup><article  id="examples">
 
+<ul>
+<li>Input
+
+<ul>
+<li>categories_unique: data frame with categories asked in each episode</li>
+<li>categories_asked: information about questions that had been asked</li>
+</ul></li>
+</ul>
+
 <pre class = 'prettyprint lang-r'>mutate(categories_unique = map(categories_unique, 
                             ~ rownames_to_column(., var = &quot;x_pos&quot;)),
          perfect_pos = map2(categories_unique, categories_asked, 
@@ -3215,6 +3228,41 @@ slide:not(.current) .plotly.html-widget{
                            ~ group_by(., round)),
          perfect_pos = map(perfect_pos, 
                            ~ expand(., x_pos, value)))</pre>
+
+<ul>
+<li>Output
+
+<ul>
+<li>categories_unique: x position assigned to each category</li>
+<li>perfect_pos: dataframe with perfect game</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Examples</h2></hgroup><article  id="examples-1">
+
+<ul>
+<li>Input
+
+<ul>
+<li>dd_perfect:</li>
+<li>dd_weight: data frame containing the weight of each</li>
+</ul></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mutate(dd_perfect = map2(dd_perfect, dd_weight,
+                ~ full_join(.x, .y, by = &quot;category&quot;)),
+dd_perfect = map(dd_perfect, 
+                 ~ mutate(., daily_double = case_when(
+                   is.na(daily_double) == TRUE ~ weight,
+                   is.na(daily_double) == FALSE ~ daily_double))))</pre>
+
+<ul>
+<li>Output
+
+<ul>
+<li>dd_perfect: perfect data frame of daily double categories where the weight is mapped to the unasked questions</li>
+</ul></li>
+</ul>
 
 </article></slide><slide class=""><hgroup><h2>Lessons Learned</h2></hgroup><article  id="lessons-learned"></article></slide>
 

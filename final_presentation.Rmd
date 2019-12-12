@@ -150,21 +150,23 @@ Create "perfect" data frames
 ## Interesting Packages or Techniques
 
 - Creating perfect data frame
-  + `expand`
+  + Package: `tidyr`
+  + Function(s): `expand()`
   
 - Mapping
-  + `map`
-  + `map2`
+  + Package: `purrr`
+  + Function(s): `map()`, `map2()`
 
 - Joining
-  + `full_join`
-  + `right_join`
-  + `left_join`
+  + Package: `dplyr`
+  + Function(s): `right_join`, `full_join`, `left_join`
 
 ## Examples
 
-categories_unique: data frame with categories asked in each episode
-categories_asked: information about questions that had been asked
+- Input
+  + categories_unique: data frame with categories asked in each episode
+  + categories_asked: information about questions that had been asked
+  
 ```{r, eval=FALSE}
 mutate(categories_unique = map(categories_unique, 
                             ~ rownames_to_column(., var = "x_pos")),
@@ -176,12 +178,16 @@ mutate(categories_unique = map(categories_unique,
                            ~ expand(., x_pos, value)))
 ```
 
-perfect_pos: dataframe with perfect game
+- Output
+  + categories_unique: x position assigned to each category
+  + perfect_pos: dataframe with perfect game
 
 ## Examples
 
-dd_perfect: 
-dd_weight: data frame containing the weight of each 
+- Input
+  + dd_perfect: 
+  + dd_weight: data frame containing the weight of each 
+  
 ```{r, eval = FALSE}
 mutate(dd_perfect = map2(dd_perfect, dd_weight,
                 ~ full_join(.x, .y, by = "category")),
@@ -191,4 +197,7 @@ dd_perfect = map(dd_perfect,
                    is.na(daily_double) == FALSE ~ daily_double))))
 ```
 
+- Output
+  + dd_perfect: perfect data frame of daily double categories where the weight is mapped to the unasked questions
+  
 ## Lessons Learned
