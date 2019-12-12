@@ -121,5 +121,114 @@ What did you find out? Most of these slides should be figures or tables. Discuss
 The heatmaps for all years, separated by rounds, displays interesting results. In round 1, the daily double most often occurs in category 1, point value 400 (7.33%). Other “hot” points are category 3, value 400 (6.81%) and category 1, value 500 (6.75%). The least likely placements are across all categories in value 100 (0.35% or less) and in categories 2 (4.63% or less) and 6 (4.27% or less). Value 400 is favored across all categories (4.27% – 7.33%). In round 2, the daily double is most often located in category 1, value 400 (7.06%). The other common positions are category 5, value 400 (6.59%) and category 3, value 400 (6.41%). The least likely occurrences are across value 100 (0.51% or less) and down category 2 (4.78% or less). Value 400 is elected for the position most often across categories (4.75% – 7.06%). Overall, the occurrence of the daily double remains extremely similar across round 1 and round 2 for the years analyzed.   
 
 
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+library(readr)
+library(plotly)
+library(forcats)
+library(lubridate)
+library(tidyr)
+library(purrr)
+
+
+dd <- read_csv("data/data_final.csv") 
+dd <- dd %>% 
+  rename("dd_weighting" = "weight") %>% 
+  mutate(y_pos = factor(y_pos, levels = c(1, 2, 3, 4, 5)),
+         y_pos = factor(y_pos, levels = rev(levels(y_pos))),
+         x_pos = factor(x_pos, levels = c(1, 2, 3, 4, 5, 6)),
+         x_pos = fct_recode(x_pos, 
+                            "Category 1" = "1",
+                            "Category 2" = "2",
+                            "Category 3" = "3",
+                            "Category 4" = "4",
+                            "Category 5" = "5",
+                            "Category 6" = "6")) 
+```
+
+```{r Daily Double Heatmap by year, fig.height = 10}
+dd %>% 
+  mutate(year = year(air_date),
+         y_pos = fct_recode(y_pos,
+                            "200/400" = "1",
+                            "400/800" = "2",
+                            "600/1200" = "3",
+                            "800/1600" = "4",
+                            "1000/2000" = "5")) %>% 
+  group_by(x_pos, y_pos, year) %>%
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  ungroup() %>% 
+  group_by(year) %>% 
+  mutate(Percent = round(number_of_doubles/sum(number_of_doubles) * 100), 
+         digits = 2)  %>% 
+  ggplot(aes(x = x_pos, y = y_pos, fill = Percent)) +
+  geom_tile(color = "white") +
+   labs(x = NULL, 
+        y = NULL, 
+        fill = "Percent of Daily Doubles") +
+  ggtitle("Percent of Jeopardy Daily Doubles by Year") +
+  scale_fill_continuous(high = "dodgerblue4", 
+                        low = "azure") +
+  theme(legend.position = "bottom", 
+        legend.box = "horizontal",
+        axis.text.x = element_text(angle = 90)) +
+  geom_text(aes(label = paste0(Percent, "%")), color = "black") +
+  scale_x_discrete(position = "top") +
+  facet_wrap(~year, ncol = 4)
+
+```
+
+```{r Daily Doubles by Round}
+dd_1 <- dd %>% 
+  filter(round == "1") %>%
+  mutate(y_pos = fct_recode(y_pos,
+                            "200" = "1",
+                            "400" = "2",
+                            "600" = "3",
+                            "800" = "4",
+                            "1000" = "5")) %>% 
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  mutate(Percent = round(number_of_doubles/2476*100, digits = 2)) %>%
+  ggplot(aes(x = x_pos, y = y_pos, fill = Percent)) +
+  geom_tile(color = "white") +
+   labs(x = NULL, 
+        y = NULL, 
+        fill = "Percent of Daily Doubles") +
+  ggtitle("Percent of Jeopardy Daily Doubles Round 1") +
+  scale_fill_continuous(high = "dodgerblue4", 
+                        low = "azure") +
+  theme(legend.position = "bottom", 
+        legend.box = "horizontal") +
+  geom_text(aes(label = paste0(Percent, "%")), color = "black") +
+  scale_x_discrete(position = "top")
+dd_1
+```
+```{r}
+dd_2 <- dd %>%
+  filter(round == "2") %>%
+  mutate(y_pos = fct_recode(y_pos,
+                            "400" = "1",
+                            "800" = "2",
+                            "1200" = "3",
+                            "1600" = "4",
+                            "2000" = "5")) %>% 
+  group_by(x_pos, y_pos) %>% 
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  mutate(Percent = round(number_of_doubles/4887*100, digits = 2)) %>%
+    ggplot(aes(x = x_pos, y = y_pos, fill = Percent)) +
+  geom_tile(color = "white") +
+   labs(x = NULL, 
+        y = NULL, 
+        fill = "Percent of Daily Doubles") +
+  ggtitle("Percent of Jeopardy Daily Doubles Round 2") +
+  scale_fill_continuous(high = "dodgerblue4", 
+                        low = "azure") +
+  theme(legend.position = "bottom", 
+        legend.box = "horizontal") +
+  geom_text(aes(label = paste0(Percent, "%")), color = "black") +
+  scale_x_discrete(position = "top")
+dd_2
+```
+
 # Conclusions: 
 So what? How do your results compare with what other people have found out about your research question? Based on what you found, are there now other things you want to check out?
