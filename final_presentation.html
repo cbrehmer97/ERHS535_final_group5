@@ -3127,19 +3127,18 @@ slide:not(.current) .plotly.html-widget{
 </article></slide><slide class=""><hgroup><h2>Introduction</h2></hgroup><article  id="introduction">
 
 <ul>
-<li>Importance to the game (James Holzhauer)</li>
-<li>Other research</li>
-<li>Challenge of finding position</li>
+<li>Importance to the game (James Holzhauer) <br><br></li>
+<li>Previous analyses (none over time) <br><br></li>
+<li>Challenge of finding position <br><br></li>
 <li>Visual representation</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Methods</h2></hgroup><article  id="methods">
 
-<p>Finding the position of the Daily Double:</p>
-
 <ul>
-<li>x position (location of the categories)</li>
-<li>y position (location of the values)</li>
+<li>Only included episodes from dates beyond November 26, 2001 <br><br></li>
+<li>Finding x position of daily double (filtered to episodes with 12 categories) <br><br></li>
+<li>Finding y position of daily double (Weighted across missing values)</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Methods</h2></hgroup><article  id="methods-1">
@@ -3157,10 +3156,27 @@ slide:not(.current) .plotly.html-widget{
 <ul>
 <li>Daily Double Round 1 since 2001</li>
 <li>Daily Double Round 2 since 2001</li>
-<li>Daily Double Location by year</li>
+<li>Daily Double Location by year <br><br></li>
+<li>Daily Doubles are not evenly distributed across the board</li>
+<li>No differences in daily double location between Round 1 and Round 2</li>
+<li>15 out of 19 years had daily doubles within the 800/1600 row</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Conclusions</h2></hgroup><article  id="conclusions">
+
+<ul>
+<li>Similar to previous analyses
+
+<ul>
+<li><a href='https://flowingdata.com/2015/03/03/where-to-find-jeopardy-daily-doubles/' title=''>https://flowingdata.com/2015/03/03/where-to-find-jeopardy-daily-doubles/</a> <br><br></li>
+</ul></li>
+<li>Shift in location in 2016
+
+<ul>
+<li>Arthur Chu and subsequent analyses <br><br></li>
+</ul></li>
+<li>Future locations (pattern or random)</li>
+</ul>
 
 </article></slide><slide class=""><hgroup><h2>Overview of Approach</h2></hgroup><article  id="overview-of-approach">
 
@@ -3180,9 +3196,25 @@ slide:not(.current) .plotly.html-widget{
 <li><code>map</code></li>
 <li><code>map2</code></li>
 </ul></li>
+<li>Joining
+
+<ul>
+<li><code>full_join</code></li>
+<li><code>right_join</code></li>
+<li><code>left_join</code></li>
+</ul></li>
 </ul>
 
-<p>-Joining + <code>full_join</code> + <code>right_join</code> + <code>left_join</code></p>
+</article></slide><slide class=""><hgroup><h2>Examples</h2></hgroup><article  id="examples">
+
+<pre class = 'prettyprint lang-r'>mutate(categories_unique = map(categories_unique, 
+                            ~ rownames_to_column(., var = &quot;x_pos&quot;)),
+         perfect_pos = map2(categories_unique, categories_asked, 
+                            ~ full_join(.x, .y)),
+         perfect_pos = map(perfect_pos, 
+                           ~ group_by(., round)),
+         perfect_pos = map(perfect_pos, 
+                           ~ expand(., x_pos, value)))</pre>
 
 </article></slide><slide class=""><hgroup><h2>Lessons Learned</h2></hgroup><article  id="lessons-learned"></article></slide>
 

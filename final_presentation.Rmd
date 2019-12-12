@@ -156,9 +156,39 @@ Create "perfect" data frames
   + `map`
   + `map2`
 
--Joining
+- Joining
   + `full_join`
   + `right_join`
   + `left_join`
+
+## Examples
+
+categories_unique: data frame with categories asked in each episode
+categories_asked: information about questions that had been asked
+```{r, eval=FALSE}
+mutate(categories_unique = map(categories_unique, 
+                            ~ rownames_to_column(., var = "x_pos")),
+         perfect_pos = map2(categories_unique, categories_asked, 
+                            ~ full_join(.x, .y)),
+         perfect_pos = map(perfect_pos, 
+                           ~ group_by(., round)),
+         perfect_pos = map(perfect_pos, 
+                           ~ expand(., x_pos, value)))
+```
+
+perfect_pos: dataframe with perfect game
+
+## Examples
+
+dd_perfect: 
+dd_weight: data frame containing the weight of each 
+```{r, eval = FALSE}
+mutate(dd_perfect = map2(dd_perfect, dd_weight,
+                ~ full_join(.x, .y, by = "category")),
+dd_perfect = map(dd_perfect, 
+                 ~ mutate(., daily_double = case_when(
+                   is.na(daily_double) == TRUE ~ weight,
+                   is.na(daily_double) == FALSE ~ daily_double))))
+```
 
 ## Lessons Learned
