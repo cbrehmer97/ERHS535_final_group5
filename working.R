@@ -81,7 +81,7 @@ library(plotly)
 
 #Create heat maps by round
 #Round 1
-dd_1 <- dd %>% 
+dd_1 <- jeopardy_final %>% 
   filter(round == "1") %>%
   mutate(categories_heatmap = case_when(x_pos == "1" ~ "Category 1",
                                         x_pos == "2" ~ "Category 2",
@@ -89,9 +89,9 @@ dd_1 <- dd %>%
                                         x_pos == "4" ~ "Category 4",
                                         x_pos == "5" ~ "Category 5",
                                         x_pos == "6" ~ "Category 6")) %>%
-  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  mutate(weight = as.numeric(weight)) %>% 
   group_by(categories_heatmap, value) %>% 
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  summarise(number_of_doubles = sum(weight)) %>% 
   mutate(Percent = round(number_of_doubles/2476*100, digits = 2)) %>%
   plot_ly(
     x = ~ categories_heatmap,
@@ -111,7 +111,7 @@ dd_1 <- dd %>%
 dd_1
 
 #Round 2
-dd_2 <- dd %>%
+dd_2 <- jeopardy_final %>%
   filter(round == "2") %>%
   mutate(categories_heatmap = case_when(x_pos == "1" ~ "Category 1",
                                         x_pos == "2" ~ "Category 2",
@@ -119,9 +119,9 @@ dd_2 <- dd %>%
                                         x_pos == "4" ~ "Category 4",
                                         x_pos == "5" ~ "Category 5",
                                         x_pos == "6" ~ "Category 6")) %>%
-  mutate(dd_weighting = as.numeric(dd_weighting)) %>% 
+  mutate(weight = as.numeric(weight)) %>% 
   group_by(categories_heatmap, value) %>% 
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  summarise(number_of_doubles = sum(weight)) %>% 
   mutate(Percent = round(number_of_doubles/4887*100, digits = 2)) %>%
   plot_ly(
     x = ~ categories_heatmap,
