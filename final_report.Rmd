@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = FALSE, message = FAL
 
 The Daily Double is an important part of the game of Jeopardy. If a player can effectively predict where the Daily Doubles will be on the board they have a clear advantage to win the game. Recent Jeopardy contestant, James Holzhauer, became known for his strategy of hopping around the board to find the Daily Doubles and then betting larger than normal quantities. In just 32 games, his total winnings reached almost $2.5 million (an average of over $75,000 per game).
 
-What positions on the Jeopardy board are most likely to be a Daily Double? Several people have attempted to answer this question recently and their results can be found in a variety of different sources. Finding the answer to this question is not as simple as it seems at first. The common datasets for Jeopardy questions do not contain the questions that were not asked. This can make finding the exact x and y positions difficult. Multiple approaches can be taken to deal with this issue. The approach taken to develop the figures in this report are described in the methods section. The answer to this question can be effectively presented visually through a heatmap that shows each position on the Jeopardy board. This important question presents a challenge in data cleaning, but when done correctly can result in interesting figures that has drawn the attention of many Jeopardy fans and data enthusiasts.
+What positions on the Jeopardy board are most likely to be a Daily Double? Several people have attempted to answer this question recently and their results can be found in a variety of different sources. Finding the answer to this question is not as simple as it seems at first. The common datasets for Jeopardy questions do not contain the questions that were not asked. This can make finding the exact x and y positions difficult. Multiple approaches can be taken to deal with this issue. The approach taken to develop the figures in this report are described in the methods section. The answer to this question can be effectively presented visually through a heatmap that shows each position on the Jeopardy board. Similar to previous analyses, the results were presented in a heatmap for each round to determine if there was a difference. As a secondary question, this analysis faceted the results by year to look at changes over time which was not included in previous analyses. This important question presents a challenge in data cleaning, but when done correctly can result in interesting figures that has drawn the attention of many Jeopardy fans and data enthusiasts.
 
 ## Methods: 
 
@@ -117,7 +117,7 @@ weighted_jeopardy_board %>%
 ## Results: 
 What did you find out? Most of these slides should be figures or tables. Discuss your interpretation of your results as you present them. Ideally, you should be able to show your main results in about 3 slides, with one figure or table per slide.
 
-The heatmaps for all years, separated by rounds, displays interesting results. In round 1, the daily double most often occurs in category 1, point value 400 (7.33%). Other “hot” points are category 3, value 400 (6.81%) and category 1, value 500 (6.75%). The least likely placements are across all categories in value 100 (0.35% or less) and in categories 2 (4.63% or less) and 6 (4.27% or less). Value 400 is favored across all categories (4.27% – 7.33%). In round 2, the daily double is most often located in category 1, value 400 (7.06%). The other common positions are category 5, value 400 (6.59%) and category 3, value 400 (6.41%). The least likely occurrences are across value 100 (0.51% or less) and down category 2 (4.78% or less). Value 400 is elected for the position most often across categories (4.75% – 7.06%). Overall, the occurrence of the daily double remains extremely similar across round 1 and round 2 for the years analyzed.   
+The heatmaps for all years, separated by rounds, displays interesting results. In round 1, the daily double most often occurs in category 1, point value 800 (7.33%). Other “hot” points are category 4, value 800 (6.81%) and category 1, value 1000 (6.75%). The least likely placements are across all categories in value 100 (0.35% or less) and in categories 2 (4.63% or less) and 6 (4.27% or less). Value 800 is favored across all categories (4.27% – 7.33%). In round 2, the daily double is most often located in category 1, value 1600 (7.06%). The other common positions are category 5, value 1600 (6.59%) and category 3, value 1600 (6.41%). The least likely occurrences are across value 100 (0.51% or less) and down category 2 (4.78% or less) and category 6 (4.75% or less). Value 1600 is elected for the position most often across categories (4.75% – 7.06%). Overall, the occurrence of the daily double remains extremely similar across round 1 and round 2 for the years analyzed. These results are visually presented in Figure 3 (Round 1) and Figure 4 (Round 2).
 
 
 ```{r, warning = FALSE, error = FALSE, message = FALSE, echo= FALSE}
@@ -144,40 +144,6 @@ dd <- dd %>%
                             "Category 6" = "6")) 
 ```
 
-```{r Daily Double Heatmap by year, fig.height = 10, echo= FALSE}
-dd %>% 
-  mutate(year = year(air_date),
-         y_pos = fct_recode(y_pos,
-                            "200/400" = "1",
-                            "400/800" = "2",
-                            "600/1200" = "3",
-                            "800/1600" = "4",
-                            "1000/2000" = "5")) %>% 
-  group_by(x_pos, y_pos, year) %>%
-  summarise(number_of_doubles = sum(dd_weighting)) %>% 
-  ungroup() %>% 
-  group_by(year) %>% 
-  mutate(Percent = round(number_of_doubles/sum(number_of_doubles) * 100), 
-         digits = 2)  %>% 
-  ggplot(aes(x = x_pos, y = y_pos, fill = Percent)) +
-  geom_tile(color = "white") +
-   labs(x = NULL, 
-        y = NULL, 
-        fill = "Percent of Daily Doubles") +
-  scale_fill_continuous(high = "dodgerblue4", 
-                        low = "azure") +
-  theme(legend.position = "bottom", 
-        legend.box = "horizontal",
-        axis.text.x = element_text(angle = 90)) +
-  scale_x_discrete(position = "top") +
-  facet_wrap(~year, ncol = 4)
-
-```
-Figure 3. Percent of Daily Doubles by Position Faceted by Year
-\
-\
-\
-\
 ```{r Daily Doubles by Round, echo= FALSE}
 dd_1 <- dd %>% 
   filter(round == "1") %>%
@@ -195,7 +161,6 @@ dd_1 <- dd %>%
    labs(x = NULL, 
         y = NULL, 
         fill = "Percent of Daily Doubles") +
-  ggtitle("Percent of Jeopardy Daily Doubles Round 1") +
   scale_fill_continuous(high = "dodgerblue4", 
                         low = "azure") +
   theme(legend.position = "bottom", 
@@ -204,7 +169,7 @@ dd_1 <- dd %>%
   scale_x_discrete(position = "top")
 dd_1
 ```
-Figure 4. Percent of Daily Doubles by Position in Round 1
+Figure 3. Percent of Daily Doubles by Position in Round 1
 \
 \
 \
@@ -235,7 +200,42 @@ dd_2 <- dd %>%
 dd_2
 
 ```
-Figure 5. Percent of Daily Doubles by Position in Round 2
+Figure 4. Percent of Daily Doubles by Position in Round 2
+\
+\
+\
+\
+```{r Daily Double Heatmap by year, fig.height = 10, echo= FALSE}
+dd %>% 
+  mutate(year = year(air_date),
+         y_pos = fct_recode(y_pos,
+                            "200/400" = "1",
+                            "400/800" = "2",
+                            "600/1200" = "3",
+                            "800/1600" = "4",
+                            "1000/2000" = "5")) %>% 
+  group_by(x_pos, y_pos, year) %>%
+  summarise(number_of_doubles = sum(dd_weighting)) %>% 
+  ungroup() %>% 
+  group_by(year) %>% 
+  mutate(Percent = round(number_of_doubles/sum(number_of_doubles) * 100), 
+         digits = 2)  %>% 
+  ggplot(aes(x = x_pos, y = y_pos, fill = Percent)) +
+  geom_tile(color = "white") +
+   labs(x = NULL, 
+        y = NULL, 
+        fill = "Percent of Daily Doubles") +
+  scale_fill_continuous(high = "dodgerblue4", 
+                        low = "azure") +
+  theme(legend.position = "bottom", 
+        legend.box = "horizontal",
+        axis.text.x = element_text(angle = 90)) +
+  scale_x_discrete(position = "top") +
+  facet_wrap(~year, ncol = 4)
+
+```
+Figure 5. Percent of Daily Doubles by Position Faceted by Year
+\
 \
 \
 \
