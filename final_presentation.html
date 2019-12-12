@@ -3120,6 +3120,19 @@ slide:not(.current) .plotly.html-widget{
           </hgroup>
   </slide>
 
+<style type="text/css">
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+</style>
+
 <slide class=""><hgroup><h2>Research Question</h2></hgroup><article  id="research-question">
 
 <p>What positions on the Jeopardy board are most likely to be a Daily Double?</p>
@@ -3180,43 +3193,95 @@ slide:not(.current) .plotly.html-widget{
 
 </article></slide><slide class=""><hgroup><h2>Overview of Approach</h2></hgroup><article  id="overview-of-approach">
 
-<p>Create &ldquo;perfect&rdquo; data frames</p>
+<ol>
+
+<li>
+
+Nest data by air date <br><br>
+
+<li>
+
+Pull out subsets of that data <br><br>
+
+<li>
+
+Modify subsets by:
+
+<ol type="a">
+
+<li>
+
+Adding additional information (i.e. weight, x/y position)
+
+</li>
+
+<li>
+
+Manipulating data (i.e. expanding, further subsetting)
+
+</li>
+
+</ol>
+
+</li>
+
+</ol>
+
+<ol start = "3">
+
+<li>
+
+Rejoin dataframes to get desired information <br><br>
+
+<li>
+
+Create tidy dataset for plots
+
+</ol>
 
 </article></slide><slide class=""><hgroup><h2>Interesting Packages or Techniques</h2></hgroup><article  id="interesting-packages-or-techniques">
+
+<p><font size="4"></p>
 
 <ul>
 <li>Creating perfect data frame
 
 <ul>
-<li><code>expand</code>
-
-<ul>
-<li>hi</li>
-</ul></li>
+<li>Package: <code>tidyr</code></li>
+<li>Function(s): <code>expand()</code> <br><br></li>
 </ul></li>
 <li>Mapping
 
 <ul>
-<li><code>map</code></li>
-<li><code>map2</code></li>
+<li>Package: <code>purrr</code></li>
+<li>Function(s): <code>map()</code>, <code>map2()</code> <br><br></li>
 </ul></li>
 <li>Joining
 
 <ul>
-<li><code>full_join</code></li>
-<li><code>right_join</code></li>
-<li><code>left_join</code></li>
+<li>Package: <code>dplyr</code></li>
+<li>Function(s): <code>right_join()</code>, <code>full_join()</code>, <code>left_join()</code> <br><br></li>
+</ul></li>
+<li>Plotting
+
+<ul>
+<li>Package: <code>plotly</code></li>
+<li>Function(s): <code>plot_ly()</code></li>
 </ul></li>
 </ul>
 
+<p></font></p>
+
 </article></slide><slide class=""><hgroup><h2>Examples</h2></hgroup><article  id="examples">
+
+<p><font size="4.5"></p>
 
 <ul>
 <li>Input
 
 <ul>
-<li>categories_unique: data frame with categories asked in each episode</li>
-<li>categories_asked: information about questions that had been asked</li>
+<li><code>categories_unique</code>: categories asked in each episode</li>
+<li><code>categories_asked</code>: information about asked questions</li>
 </ul></li>
 </ul>
 
@@ -3233,19 +3298,23 @@ slide:not(.current) .plotly.html-widget{
 <li>Output
 
 <ul>
-<li>categories_unique: x position assigned to each category</li>
-<li>perfect_pos: dataframe with perfect game</li>
+<li><code>categories_unique</code>: x position assigned to each category</li>
+<li><code>perfect_pos</code>: perfect df for each game</li>
 </ul></li>
 </ul>
 
+<p></font></p>
+
 </article></slide><slide class=""><hgroup><h2>Examples</h2></hgroup><article  id="examples-1">
+
+<p><font size="4.5"></p>
 
 <ul>
 <li>Input
 
 <ul>
-<li>dd_perfect:</li>
-<li>dd_weight: data frame containing the weight of each</li>
+<li><code>dd_perfect</code>: perfect DD df</li>
+<li><code>dd_weight</code>: df containing the weight to be assiged to DD questions</li>
 </ul></li>
 </ul>
 
@@ -3260,11 +3329,17 @@ dd_perfect = map(dd_perfect,
 <li>Output
 
 <ul>
-<li>dd_perfect: perfect data frame of daily double categories where the weight is mapped to the unasked questions</li>
+<li><code>dd_perfect</code>: perfect DD df with weights added</li>
 </ul></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Lessons Learned</h2></hgroup><article  id="lessons-learned"></article></slide>
+<p></font></p>
+
+</article></slide><slide class=""><hgroup><h2>Lessons Learned</h2></hgroup><article  id="lessons-learned">
+
+<ol>
+<li>Seemingly simple problems may not be simple to answer.</li>
+</ol></article></slide>
 
 
   <slide class="backdrop"></slide>

@@ -6,6 +6,18 @@ output:
   ioslides_presentation: default
   beamer_presentation: default
 ---
+<style type="text/css">
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+</style>
 
 ## Research Question
 
@@ -141,31 +153,51 @@ Flex Dashboard:
 - Future locations (pattern or random)
 
 ## Overview of Approach
-
-Create "perfect" data frames
-
-
-
+<ol>
+<li> Nest data by air date
+<br><br>
+<li> Pull out subsets of that data
+<br><br>
+<li> Modify subsets by:
+<ol type = "a">
+<li> Adding additional information (i.e. weight, x/y position) </li>
+<li> Manipulating data (i.e. expanding, further subsetting) </li>
+</ol>
+</li>
+</ol>
+<ol start = "3">
+<li> Rejoin dataframes to get desired information
+<br><br>
+<li> Create tidy dataset for plots
+</ol>
 
 ## Interesting Packages or Techniques
+<font size="4">
 
 - Creating perfect data frame
   + Package: `tidyr`
   + Function(s): `expand()`
-  
+<br><br>
 - Mapping
   + Package: `purrr`
   + Function(s): `map()`, `map2()`
-
+<br><br>
 - Joining
   + Package: `dplyr`
-  + Function(s): `right_join`, `full_join`, `left_join`
+  + Function(s): `right_join()`, `full_join()`, `left_join()`
+<br><br>
+- Plotting
+  + Package: `plotly`
+  + Function(s): `plot_ly()`
+
+</font>
 
 ## Examples
+<font size="4.5">
 
 - Input
-  + categories_unique: data frame with categories asked in each episode
-  + categories_asked: information about questions that had been asked
+  + `categories_unique`: categories asked in each episode
+  + `categories_asked`: information about asked questions
   
 ```{r, eval=FALSE}
 mutate(categories_unique = map(categories_unique, 
@@ -179,14 +211,18 @@ mutate(categories_unique = map(categories_unique,
 ```
 
 - Output
-  + categories_unique: x position assigned to each category
-  + perfect_pos: dataframe with perfect game
+  + `categories_unique`: x position assigned to each category
+  + `perfect_pos`: perfect df for each game
+  
+</font>
 
 ## Examples
 
+<font size="4.5">
+
 - Input
-  + dd_perfect: 
-  + dd_weight: data frame containing the weight of each 
+  + `dd_perfect`: perfect DD df
+  + `dd_weight`: df containing the weight to be assiged to DD questions
   
 ```{r, eval = FALSE}
 mutate(dd_perfect = map2(dd_perfect, dd_weight,
@@ -198,6 +234,10 @@ dd_perfect = map(dd_perfect,
 ```
 
 - Output
-  + dd_perfect: perfect data frame of daily double categories where the weight is mapped to the unasked questions
-  
+  + `dd_perfect`: perfect DD df with weights added
+
+</font>
+
 ## Lessons Learned
+
+1. Seemingly simple problems may not be simple to answer.
