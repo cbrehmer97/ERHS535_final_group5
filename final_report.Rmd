@@ -5,6 +5,7 @@ date: "12/9/2019"
 output:
   word_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -171,6 +172,7 @@ dd_1 <- dd %>%
   scale_x_discrete(position = "top")
 dd_1
 ```
+\
 Figure 3. Percent of Daily Doubles by Position in Round 1
 \
 \
@@ -202,12 +204,13 @@ dd_2 <- dd %>%
 dd_2
 
 ```
+\
 Figure 4. Percent of Daily Doubles by Position in Round 2
 \
 \
 \
 \
-```{r Daily Double Heatmap by year, fig.height = 10, echo= FALSE}
+```{r Daily Double Heatmap by year, fig.height = 7, echo= FALSE}
 dd %>% 
   mutate(year = year(air_date),
          y_pos = fct_recode(y_pos,
@@ -236,13 +239,14 @@ dd %>%
   facet_wrap(~year, ncol = 4)
 
 ```
+\
 Figure 5. Percent of Daily Doubles by Position Faceted by Year
 \
 \
 \
 \
-## Conclusions
 
+## Conclusions
 The results of this analysis are very similar to previous analyses on Daily Double location by round. One of the original analyses of Daily Double location was conducted by Nathan Yau (https://flowingdata.com/2015/03/03/where-to-find-jeopardy-daily-doubles/) in 2015. The results of this study look similar to his heatmap that shows the location of all Daily Doubles for 31 seasons. Yau's analysis was done because of a Jeopardy contestant, Arthur Chu, that appeared on the show in 2014. Arthur Chu found success on the show by jumping around the board hunting for the Daily Doubles. He was not the first to adopt this strategy, but was one of the most controversial players because of his approach. Since 2015, there have been other analyses that looked at the same question and found similar results by round. To our knowledge, no other analyses have look at the data by year. This analysis included data up to 2019 and showed a noticable shift in location around 2015/2016. This shift likely occured because of Arthur Chu and the subsequent analyses of Daily Double locations. This change should be analyzed over the next few years to see if another pattern is established or if Jeopardy adopts a more random Daily Double placement.
 
 
