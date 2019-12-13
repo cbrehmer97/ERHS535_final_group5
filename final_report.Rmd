@@ -66,13 +66,13 @@ jeopardy_board <- tibble(
             200, 400, 600, 800, 1000))
 
 jeopardy_board <- jeopardy_board %>% 
-  mutate(number_of_dd = c(1, 0, 0, 2, 1,
+  mutate(number_of_dd = c(1, 0, 0, 0, 1,
                           1, 0, 1, 1, 1,
                           1, 1, 1, 1, 1,
                           1, 1, 1, 0, 1,
                           1, 0, 0, 1, 1,
                           1, 1, 1, 0, 1),
-          text = c(NA, "MISSING", "MISSING", "Daily Double", NA,
+          text = c(NA, "MISSING", "MISSING", "MISSING", NA,
                           NA, "MISSING", NA, NA, NA,
                           NA, NA, NA, NA, NA,
                           NA, NA, NA, "MISSING", NA,
@@ -102,7 +102,7 @@ jeopardy_board %>%
   geom_text(aes(label = text), color = "gray") +
   scale_x_discrete(position = "top") +
   labs(caption = paste0("Figure 1. In Category 1, the 400, 600 and 800 values",
-  " were missing, and \na daily double question was asked. But it's unknown ",
+  " were missing, and \na daily double question was asked. It's unknown ",
   "if the daily double was \nat the 400, 600 or 800 value position.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
