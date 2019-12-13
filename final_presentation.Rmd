@@ -4,6 +4,7 @@ author: "Collin Brehmer, Molly Hischke, Kyle Hancock, Nikki Johnson"
 date: "12/13/2019"
 output:
   ioslides_presentation: default
+  slidy_presentation: default
   beamer_presentation: default
 ---
 <style type="text/css">
@@ -73,7 +74,7 @@ jeopardy_board <- jeopardy_board %>%
                           1, 1, 1, 0, 1,
                           1, 0, 0, 1, 1,
                           1, 1, 1, 0, 1),
-          text = c(NA, "MISSING", "MISSING", "Daily Double", NA,
+          text = c(NA, "MISSING", "MISSING", "MISSING", NA,
                           NA, "MISSING", NA, NA, NA,
                           NA, NA, NA, NA, NA,
                           NA, NA, NA, "MISSING", NA,
