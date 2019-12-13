@@ -4,8 +4,8 @@ author: "Collin Brehmer, Molly Hischke, Kyle Hancock, Nikki Johnson"
 date: "12/13/2019"
 output:
   ioslides_presentation: default
-  slidy_presentation: default
   beamer_presentation: default
+  slidy_presentation: default
 ---
 <style type="text/css">
 
