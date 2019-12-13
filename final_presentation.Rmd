@@ -135,7 +135,7 @@ Flex Dashboard:
 <br><br>
 - Daily Doubles are not evenly distributed across the board
 - No differences in daily double location between Round 1 and Round 2
-- 15 out of 19 years had daily doubles within the 800/1600 row
+- 15 out of 19 years had the most daily doubles within the 800/1600 row
 
 ## Conclusions
 
