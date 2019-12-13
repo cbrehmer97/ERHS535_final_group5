@@ -3,8 +3,8 @@ title: "Final Presentation"
 author: "Collin Brehmer, Molly Hischke, Kyle Hancock, Nikki Johnson"
 date: "12/13/2019"
 output:
-  beamer_presentation: default
   ioslides_presentation: default
+  beamer_presentation: default
 ---
 <style type="text/css">
 
@@ -104,9 +104,6 @@ jeopardy_board %>%
   theme(legend.position = "none") + 
   geom_text(aes(label = text), color = "gray") +
   scale_x_discrete(position = "top") +
-  labs(caption = paste0("Figure 1. In Category 1, the 400, 600 and 800 values",
-  " were missing, and \na daily double question was asked. But it's unknown ",
-  "if the daily double was \nat the 400, 600 or 800 value position.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
@@ -125,8 +122,6 @@ weighted_jeopardy_board %>%
   theme(legend.position = "none") + 
   geom_text(aes(label = number_of_dd)) +
   scale_x_discrete(position = "top") +
-  labs(caption = paste0("Figure 2. The daily double within a category was ",
-                        "weighted acrossed all \nmissing values.")) +
   theme(plot.caption = element_text(hjust = 0, size = rel(1.2)))
 ```
 
@@ -238,6 +233,32 @@ dd_perfect = map(dd_perfect,
 
 </font>
 
+## Examples
+
+<font size="4.5">
+
+```{r, eval = FALSE}
+daily_double_year %>% 
+  unnest() %>% 
+  plot_ly(
+    x = ~ x_pos,
+    y = ~ y_pos,
+    z = ~ Percent,
+    frame = ~ year,
+    hovertemplate = paste("Daily Double Percent: %{z:,}%<br>",
+                          "<extra></extra>"),
+    colors = "Blues",
+    type = 'heatmap'
+) %>% 
+  layout(title = list(text = ""), 
+         xaxis = list(title = "", 
+                      side = 'top'),
+          yaxis = list(title = ""))
+```
+
+</font>
+
 ## Lessons Learned
 
 1. Seemingly simple problems may not be simple to answer.
+2. Pros/cons of `ggplot()` vs `plot_ly()`
