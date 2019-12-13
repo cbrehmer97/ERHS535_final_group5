@@ -7,19 +7,6 @@ output:
   beamer_presentation: default
   slidy_presentation: default
 ---
-<style type="text/css">
-
-body, td {
-   font-size: 14px;
-}
-code.r{
-  font-size: 20px;
-}
-pre {
-  font-size: 20px
-}
-</style>
-
 ## Research Question
 
 What positions on the Jeopardy board are most likely to be a Daily Double by round and across years?
