@@ -36,12 +36,10 @@ dd <- dd %>%
                             "Category 6" = "6")) 
 ```
 
-
 Column 
 -----------------------------------------------------------------------
 
-### Daily Double Locations by Year
-
+### Daily Double Locations by Year (Round 1 and Round 2 data was combined)
 
 ```{r}
 daily_double_year <- dd %>% 
@@ -79,8 +77,6 @@ daily_double_year %>%
 
 
 ```
-
-
 
 Column {data-width=350}
 -----------------------------------------------------------------------
