@@ -34,6 +34,12 @@ daily_double_year <- dd %>%
 
 daily_double_year %>% 
   unnest() %>% 
+  mutate(y_pos = fct_recode(y_pos,
+                            "200/400" = "1",
+                            "400/800" = "2",
+                            "600/1200" = "3",
+                            "800/1600" = "4",
+                            "1000/2000" = "5")) %>% 
   plot_ly(
     x = ~ x_pos,
     y = ~ y_pos,
