@@ -4,8 +4,8 @@ author: "Collin Brehmer, Molly Hischke, Kyle Hancock, Nikki Johnson"
 date: "12/13/2019"
 output:
   ioslides_presentation: default
-  slidy_presentation: default
   beamer_presentation: default
+  slidy_presentation: default
 ---
 <style type="text/css">
 
@@ -226,7 +226,7 @@ mutate(categories_unique = map(data, ~ unique(select(., category)),
 ```{r, eval = FALSE}
 mutate(dd_perfect = map2(dd_perfect, dd_weight,
                 ~ full_join(.x, .y, by = "category")),
-dd_perfect = map(dd_perfect, 
+       dd_perfect = map(dd_perfect, 
                  ~ mutate(., daily_double = case_when(
                    is.na(daily_double) == TRUE ~ weight,
                    is.na(daily_double) == FALSE ~ daily_double))))
