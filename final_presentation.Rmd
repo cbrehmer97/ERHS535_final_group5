@@ -195,11 +195,11 @@ Flex Dashboard:
 <font size="4.5">
 
 - Input
-  + `categories_unique`: categories asked in each episode
-  + `categories_asked`: information about asked questions
+  + `categories_asked`: information about each episode 
   
 ```{r, eval=FALSE}
-mutate(categories_unique = map(categories_unique, 
+mutate(categories_unique = map(data, ~ unique(select(., category)),
+        categories_unique = map(categories_unique, 
                             ~ rownames_to_column(., var = "x_pos")),
          perfect_pos = map2(categories_unique, categories_asked, 
                             ~ full_join(.x, .y)),
