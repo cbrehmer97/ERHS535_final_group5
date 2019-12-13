@@ -10,7 +10,10 @@ output:
 ---
 ## Research Question
 
-What positions on the Jeopardy board are most likely to be a Daily Double by round and across years?
+What positions on the Jeopardy board are most likely to be a Daily Double?
+
+- By round
+- By year
 
 ## Introduction
 
@@ -19,7 +22,7 @@ What positions on the Jeopardy board are most likely to be a Daily Double by rou
   - James Holzhauer (2019)
 <br><br>
 - Previous analyses
-  - None across years
+  - None have been presented across years
 <br><br>
 - Challenge of finding position
 <br><br>
@@ -83,7 +86,7 @@ weighted_jeopardy_board <- jeopardy_board %>%
 
 ## Methods
       
-```{r, echo = FALSE, fig.height= 4, fig.width = 7, warning = FALSE}
+```{r, echo = FALSE, fig.height= 5, fig.width = 10, warning = FALSE}
 jeopardy_board %>% 
    mutate(y_pos = factor(y_pos), 
                         y_pos = factor(y_pos, levels = rev(levels(y_pos)))) %>% 
@@ -101,7 +104,7 @@ jeopardy_board %>%
 
 ## Methods
 
-```{r, echo = FALSE, fig.height= 4, fig.width = 7, warning = FALSE}
+```{r, echo = FALSE, fig.height= 5, fig.width = 10, warning = FALSE}
 weighted_jeopardy_board %>% 
    mutate(y_pos = factor(y_pos), 
                         y_pos = factor(y_pos, levels = rev(levels(y_pos)))) %>% 
@@ -124,10 +127,6 @@ Flex Dashboard:
 - Daily Double Round 1 since 2001
 - Daily Double Round 2 since 2001
 - Daily Double Location by year
-<br><br>
-- Daily Doubles are not evenly distributed across the board
-- No differences in daily double location between Round 1 and Round 2
-- 15 out of 19 years had the most daily doubles within the 800/1600 row
 
 ## Conclusions
 
@@ -152,7 +151,7 @@ Flex Dashboard:
 </ol>
 </li>
 </ol>
-<ol start = "3">
+<ol start = "4">
 <li> Rejoin dataframes to get desired information
 <br><br>
 <li> Create tidy dataset for plots
