@@ -49,8 +49,8 @@ daily_double_year <- dd %>%
   summarise(number_of_doubles = sum(dd_weighting)) %>% 
   ungroup() %>% 
   group_by(year) %>% 
-  mutate(Percent = round(number_of_doubles/sum(number_of_doubles) * 100), 
-         digits = 2) %>% 
+  mutate(Percent = round(number_of_doubles/sum(number_of_doubles) * 100, 
+         digits = 2)) %>% 
   nest()
 
 daily_double_year %>% 
