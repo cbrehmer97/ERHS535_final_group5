@@ -22,17 +22,20 @@ pre {
 
 ## Research Question
 
-What positions on the Jeopardy board are most likely to be a Daily Double?
+What positions on the Jeopardy board are most likely to be a Daily Double by round and across years?
 
 ## Introduction
 
-- Importance to the game (James Holzhauer)
+- Importance to the game
+  - Arthur Chu (2014)
+  - James Holzhauer (2019)
 <br><br>
-- Previous analyses (none over time)
+- Previous analyses
+  - None across years
 <br><br>
 - Challenge of finding position
 <br><br>
-- Visual representation
+- Visual representation of results
 
 ## Methods
 
@@ -263,3 +266,4 @@ daily_double_year %>%
 
 1. Seemingly simple problems may not be simple to answer.
 2. Pros/cons of `ggplot()` vs `plot_ly()`
+3. Project organization and GitHub
