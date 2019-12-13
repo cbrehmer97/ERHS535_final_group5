@@ -3,7 +3,8 @@ title: "Final Presentation"
 author: "Collin Brehmer, Molly Hischke, Kyle Hancock, Nikki Johnson"
 date: "12/13/2019"
 output:
-  ioslides_presentation: default
+  ioslides_presentation:
+    widescreen: true
   beamer_presentation: default
   slidy_presentation: default
 ---
