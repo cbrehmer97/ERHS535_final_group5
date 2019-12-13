@@ -267,3 +267,4 @@ daily_double_year %>%
 1. Seemingly simple problems may not be simple to answer.
 2. Pros/cons of `ggplot()` vs `plot_ly()`
 3. Project organization and GitHub
+4. Writing other code before data is completely clean is beneficial.
